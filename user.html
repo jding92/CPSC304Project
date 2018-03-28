@@ -1,0 +1,100 @@
+<h1>Billing</h1>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Credit Card Number</th>
+        <th>Expiry Date</th>
+        <th>CVV</th>
+        <th>Cardholder Name</th>
+        <th>Address</th>
+        <th>Phone Number</th>
+    </tr>
+</table>
+<form method="POST" action="user.php">
+    <div class="container">
+        <label for="CCNum">Credit Card Number</label>
+        <input type="text" placeholder="Credit Card Number" name="CCNum" required>
+        <br>
+        <label for="CCExpDate">Expiry Date</label>
+        <input type="text" placeholder="Expiry Date" name="CCExpDate" required>
+        <br>
+        <label for="CVV">CVV</label>
+        <input type="text" placeholder="CVV" name="CVV" required>
+        <br>
+        <label for="CCName">Cardholder Name</label>
+        <input type="text" placeholder="Name" name="CCName" required>
+        <br>
+        <label for="Address">Address</label>
+        <input type="text" placeholder="Address" name="Address" required>
+        <br>
+        <label for="CCPhoneNum">Phone Number</label>
+        <input type="text" placeholder="Phone Number" name="CCPhoneNum" required>
+        <br>
+        <input type="submit" value="Submit" name="billingSubmit">
+    </div>
+</form>
+<form method="POST" action="user.php">
+    <div class="container">
+        <label for="CCID">Credit Card ID</label>
+        <input type="text" placeholder="Credit Card ID" name="CCID" required>
+        <br>
+        <label for="CCNumUpdate">Credit Card Number</label>
+        <input type="text" placeholder="Credit Card Number" name="CCNumUpdate" required>
+        <br>
+        <label for="CCExpDateUpdate">Expiry Date</label>
+        <input type="text" placeholder="Expiry Date" name="CCExpDateUpdate" required>
+        <br>
+        <label for="CVVUpdate">CVV</label>
+        <input type="text" placeholder="CVV" name="CVVUpdate" required>
+        <br>
+        <label for="CCNameUpdate">Cardholder Name</label>
+        <input type="text" placeholder="Name" name="CCNameUpdate" required>
+        <br>
+        <label for="AddressUpdate">Address</label>
+        <input type="text" placeholder="Address" name="AddressUpdate" required>
+        <br>
+        <label for="CCPhoneNumUpdate">Phone Number</label>
+        <input type="text" placeholder="Phone Number" name="CCPhoneNumUpdate" required>
+        <br>
+        <input type="submit" value="Submit" name="billingUpdateSubmit">
+    </div>
+</form>
+<h1>Game Inventory</h1>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+    </tr>
+</table>
+<form method="POST" action="user.php">
+    <div class="container">
+        <label for="GameTitle">Game Title</label>
+        <input type="text" placeholder="Game Title" name="GameTitle" required>
+        <br>
+        <input type="submit" value="Submit" name="gameSubmit">
+    </div>
+</form>
+<h1>Item Inventory</h1>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Quantity</th>
+        <th>Game ID</th>
+    </tr>
+</table>
+<form method="POST" action="user.php">
+    <div class="container">
+        <label for="ItemName">Item Name</label>
+        <input type="text" placeholder="Item Name" name="ItemName" required>
+        <br>
+        <label for="Description">Description</label>
+        <input type="text" placeholder="Description" name="Description" required>
+        <br>
+        <label for="GameID">Game ID</label>
+        <input type="text" placeholder="Game ID" name="GameID" required>
+        <br>
+        <input type="submit" value="Submit" name="itemSubmit">
+    </div>
+</form>
