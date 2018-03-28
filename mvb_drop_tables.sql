@@ -1,0 +1,10 @@
+drop table user;
+drop table billing_info;
+drop table market_item;
+drop table listing;
+drop table game;
+drop table item_belongsTo;
+drop table transaction_supervises;
+drop table administrator;
+drop table monitors;
+commit;
