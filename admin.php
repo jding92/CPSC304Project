@@ -1,10 +1,58 @@
+<?php 
+    session_start();
+    $userId = isset($userId) ? $userId : '';
+    // $username = $_GET['user'];
+    // $userEmail = isset($userEmail) ? $userEmail : '';
+    // $userBalance = isset($userBalance) ? $userBalance : '';
+    // $userTransactions = isset($userTransactions) ? $userTransactions : '';
+    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+
+    function getListingsMonitored() {
+      $query = "SELECT user_id, market_item_id FROM monitors
+        WHERE administrator_id = '$userId";
+      $statement = oci_parse($connection, $query);
+
+      if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
+    function printListingsMonitored($result) {
+      echo "<table>
+              <tr>
+                <th>User ID</th>
+                <th>Market Item ID</th>
+              </tr>";
+
+      while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->USER_ID . "</td>
+                      <td>" . $row->MARKET_ITEM_ID . "</td>
+                  </tr>";        
+      }
+      echo "</table>";
+
+    }
+
+    function getTransactionsSupervised() {
+
+    }
+
+    function printTransactionsSupervised() {
+
+    }
+
+    if ($connection) {
+      
+    }
+?>
+
 <h1>Listings Monitored</h1>
-<table>
-    <tr>
-        <th>User ID</th>
-        <th>Market Item ID</th>
-    </tr>
-</table>
+<?php
+  $result = getListingsMonitored();
+  printListingsMonitored($result);
+?>
 <h1>Transactions Supervised</h1>
 <table>
     <tr>

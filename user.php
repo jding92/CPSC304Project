@@ -5,7 +5,7 @@
     $userEmail = isset($userEmail) ? $userEmail : '';
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
-    $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
@@ -94,12 +94,36 @@
         echo "</table>";
     }
 
+    function isAdmin() {
+        global $username, $userId, $connection;
+        $query = "SELECT administrator_id FROM administrator 
+            WHERE '$userId' = administrator_id";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        else {
+            $result = oci_fetch_object($statement);
+            if ($result != False) {
+                echo "<form method=\"POST\" action=";
+                echo "\"admin.php?user=$username\">";
+                echo "<div id=\"adminButton\" class=\"container\">
+                    <input type=\"submit\" value=\"Admin Page\" name=\"adminPage\">
+                    </div>
+                </form>";
+            }
+        }
+    }
+
     if ($connection) {
         getUserInfo();
     }
 ?>
 
 <h3>User Info </h3>
+<?php isAdmin() ?>
 <table style="width:30%">
     <tr><td> ID: </td> <td><?php echo $userId; ?></td></tr>
     <tr><td> Username: </td> <td><?php echo $username; ?></td></tr>
