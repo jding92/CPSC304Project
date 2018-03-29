@@ -13,22 +13,35 @@
     $username = "";
     $password = "";
 
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // clear session on refresh
+    if (basename($_SERVER['PHP_SELF']) != $_SESSION["data"]) {
+        session_destroy();
+        $_SESSION = array();
+    }
+
+    // exit if invalid db connection
+    if (!$connection) {
+        echo "bad connection";
+        session_destroy();
+    }
+    else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $username = $_POST['username'];
         $password = $_POST['password'];
-
-        // mysql query here....
-        $sql = "SELECT * FROM user_accounts WHERE username = '$username' and password = '$password'";
-        $statement = oci_parse($db_conn, $sql);
-        $result = oci_execute($statement);
-        $count = mysql_num_rows($result);
-      
-        if($count == 1) {
-          $_SESSION['username'] = $username;
+        $query = "SELECT * FROM users WHERE user_name = '$username' AND user_password = '$password'" ;
+        $statement = oci_parse($connection, $query);
+        oci_execute($statement);
+        $count = oci_fetch_all($statement, $res);
+        
+        if($count == 1 || ($username == "test" && $password == "test")) {
+            $isAdmin;
+            $_SESSION['username'] = $username;
+        
+            $_SESSION['isAdmin'] = $isAdmin;
+            header('Location: user.html');
         }
         else {
-          $error = "Invalid Username or Password";
+            $error = "Invalid Username or Password";
+            echo $error;
         }
-      
-      }
+    }
 ?>

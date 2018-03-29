@@ -1,5 +1,3 @@
-
-
 <?php
 //login ui
 include('login.html');
