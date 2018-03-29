@@ -6,15 +6,13 @@ create table billing_info
 	cardholder_name varchar(20),
 	address varchar(50),
 	phone_number varchar(10),
-	user_id integer NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES users (user_id)
+	user_id integer NOT NULL
 );
 
 create table market_item
 (
 	item_id integer PRIMARY KEY,
-	user_id integer NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES users (user_id)
+	user_id integer NOT NULL
 );
 
 create table users
@@ -22,12 +20,10 @@ create table users
 	user_id integer PRIMARY KEY,
 	user_name varchar(10),
 	user_password varchar(20),
-	user_email varchar(20),
+	user_email varchar(35),
 	user_balance decimal(14,2),
 	user_TID integer,
 	user_creditcard varchar(16) UNIQUE,
-	FOREIGN KEY (user_TID) REFERENCES transaction_supervises(transaction_id),
-	FOREIGN KEY (user_creditcard) REFERENCES billing_info(creditcard_num),
 	CONSTRAINT UC_user UNIQUE (user_name, user_email, user_creditcard)
 );
 
@@ -38,29 +34,26 @@ create table listing
 	listed_date date,
 	listed_price decimal(14,2),
 	quantity integer,
-	PRIMARY KEY (market_item_id, user_id),
-	FOREIGN KEY (market_item_id) REFERENCES market_item (item_id), 
-	FOREIGN KEY (user_id) REFERENCES users (user_id)
+	PRIMARY KEY (market_item_id, user_id)
 );
+
 
 create table game
 (
 	game_id integer PRIMARY KEY,
 	game_title varchar(30),
-	game_playtime timestamp,
-	FOREIGN KEY (game_id) REFERENCES market_item (item_id)
+	game_playtime timestamp
 );
 
 create table item_belongsTo
 (
 	item_id integer PRIMARY KEY,
 	item_quantity integer,
-	item_description text,
+	item_description varchar(250),
 	item_name varchar(30),
-	game_id integer,
-	FOREIGN KEY (item_id) REFERENCES market_item (item_id),
-	FOREIGN KEY (game_id) REFERENCES game (game_id),
+	game_id integer
 );
+
 
 create table transaction_supervises
 (
@@ -71,30 +64,60 @@ create table transaction_supervises
 	buyer_id integer NOT NULL,
 	seller_id integer NOT NULL,
 	market_item_id integer NOT NULL,
-	administrator_id integer NOT NULL,
-	FOREIGN KEY (buyer_id) REFERENCES users (user_id),
-	FOREIGN KEY (seller_id) REFERENCES users (user_id),
-	FOREIGN KEY (market_item_id) REFERENCES market_item (item_id),
-	FOREIGN KEY (administrator_id) REFERENCES administrator (administrator_id)
+	administrator_id integer NOT NULL
 );
+
+
 
 create table administrator
 (
-	administrator_id integer PRIMARY KEY,
-	FOREIGN KEY (administrator_id) REFERENCES users (user_id)
-
+	administrator_id integer PRIMARY KEY
 );
+
 
 create table monitors
 (
 	administrator_id integer,
 	user_id integer,
 	market_item_id integer,
-	PRIMARY KEY (administrator_id, user_id, market_item_id),
-	FOREIGN KEY (administrator_id) REFERENCES administrator (administrator_id),
-	FOREIGN KEY (user_id) REFERENCES users (user_id),
-	FOREIGN key (market_item_id) REFERENCES market_item (item_id)
+	PRIMARY KEY (administrator_id, user_id, market_item_id)
 );
 
+
+alter table billing_info
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id); 
+
+alter table market_item
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+alter table users
+ADD FOREIGN KEY (user_TID) REFERENCES transaction_supervises(transaction_id)
+ADD FOREIGN KEY (user_creditcard) REFERENCES billing_info(creditcard_num);
+
+alter table listing
+ADD FOREIGN KEY (market_item_id) REFERENCES market_item(item_id)
+ADD FOREIGN KEY (user_id) REFERENCES users (user_id);
+
+alter table game
+ADD FOREIGN KEY (game_id) REFERENCES market_item (item_id);
+
+alter table item_belongsTo 
+ADD FOREIGN KEY(item_id) REFERENCES market_item(item_id)
+ADD FOREIGN KEY(game_id) REFERENCES game(game_id);
+
+alter table transaction_supervises
+ADD FOREIGN KEY (buyer_id) REFERENCES users (user_id)
+ADD	FOREIGN KEY (seller_id) REFERENCES users (user_id)
+ADD	FOREIGN KEY (market_item_id) REFERENCES market_item (item_id)
+ADD	FOREIGN KEY (administrator_id) REFERENCES administrator (administrator_id);
+
+
+alter table administrator
+ADD FOREIGN KEY (administrator_id) REFERENCES users (user_id);
+
+alter table monitors
+ADD FOREIGN KEY (administrator_id) REFERENCES administrator (administrator_id)
+ADD	FOREIGN KEY (user_id) REFERENCES users (user_id)
+ADD	FOREIGN key (market_item_id) REFERENCES market_item (item_id);
 
 commit;
