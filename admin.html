@@ -33,6 +33,7 @@
         <th>Game Title</th>
     </tr>
 </table>
+<!-- Deletion query -->
 <p>Delete a game from the system.</p>
 <form method="POST" action="admin.php">
     <div class="container">
@@ -40,5 +41,17 @@
         <input type="text" placeholder="Game ID" name="gameIDDelete" required>
         <br>
         <input type="submit" value="Delete" name="gameDelete">
+    </div>
+</form>
+<!-- Division query -->
+Find the user IDs who have bought all the items for Skyrim.
+<table>
+    <tr>
+        <th>User ID</th>
+    </tr>
+</table>
+<form method="POST" action="admin.php">
+    <div class="container">
+        <input type="submit" value="Submit" name="divisionSubmit">
     </div>
 </form>
