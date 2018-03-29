@@ -1,9 +1,45 @@
-<h1>User Info</h1>
-<h2>ID: </h2>
-<h2>Name: </h2>
-<h2>Email: </h2>
-<h2>Balance: </h2>
-<h2>Previous Transactions: </h2>
+<?php 
+    session_start();
+    $userId = isset($userId) ? $userId : '';
+    $username = $_GET['user'];
+    $userEmail = isset($userEmail) ? $userEmail : '';
+    $userBalance = isset($userBalance) ? $userBalance : '';
+    $userTransactions = isset($userTransactions) ? $userTransactions : '';
+    $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+
+    function getUserInfo() {
+        global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
+
+        $query = "SELECT user_id, user_email, user_balance FROM users WHERE user_name = '$username'";
+        $statement = oci_parse($connection, $query);
+        
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        else {
+            $result = oci_fetch_object($statement);
+            $userId = $result->USER_ID;
+            $userEmail = $result->USER_EMAIL;
+            $userBalance = $result->USER_BALANCE;
+        }
+        
+    }
+
+    if ($connection) {
+        getUserInfo();
+    }
+?>
+
+<h3>User Info </h3>
+<table style="width:30%">
+    <tr><td> ID: </td> <td><?php echo $userId; ?></td></tr>
+    <tr><td> Username: </td> <td><?php echo $username; ?></td></tr>
+    <tr><td> Email: </td> <td><?php echo $userEmail; ?></td></tr>
+    <tr><td> Balance: </td> <td> <?php echo "$"; echo number_format((float)$userBalance, 2, '.', ''); ?></td></tr>
+</table>
+    
+<h3>Previous Transactions: </h3>
 <table>
     <tr>
         <th>Transaction ID</th>
@@ -14,7 +50,10 @@
         <th>Seller ID</th>
         <th>Market Item ID</th>
     </tr>
+    <tr>
+
 </table>
+
 <h1>Add Balance</h1>
 <form method="POST" action="user.php">
     <div class="container">

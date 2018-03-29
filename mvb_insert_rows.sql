@@ -14,7 +14,7 @@ insert into users values
 (3, 'PTee', '57599136', 'patrick.455@hotmail.com', 100.00, null, null);
 
 insert into users values
-(4, 'JDing', '48541058', 'jackding92@alumni.ubc.ca', 100000.00, null, null);
+(4, 'JDing', '48540158', 'jackding92@alumni.ubc.ca', 100000.00, null, null);
 
 insert into users values
 (5, 'BZhang', 'tzuyu', 'beiweizhang@gmail.com', 0.25, null, null);
