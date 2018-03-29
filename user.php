@@ -22,8 +22,76 @@
             $userId = $result->USER_ID;
             $userEmail = $result->USER_EMAIL;
             $userBalance = $result->USER_BALANCE;
+        }      
+    }
+
+    function getBuyerTransactions() {
+        global $userId, $connection;
+
+        $query = "SELECT transaction_id, purchase_date, purchase_price, user_name, market_item_id
+                  FROM transaction_supervises, users
+                  WHERE buyer_id = '$userId' and user_id = seller_id";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
         }
-        
+        return $statement;
+    }
+
+    function getSellerTransactions() {
+        global $userId, $connection;
+
+        $query = "SELECT transaction_id, purchase_date, purchase_price, user_name, market_item_id
+                  FROM transaction_supervises, users
+                  WHERE seller_id = '$userId' and user_id = buyer_id";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
+    function printBuyerTransactions($result) { //prints results from a select statement
+        echo "<tr><th>Transaction ID</th>
+                  <th>Purchase Date</th>
+                  <th>Purchase Price</th>
+                  <th>Buyer Name</th>
+                  <th>Item ID</th>
+             </tr>";
+    
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->TRANSACTION_ID . "</td>
+                      <td>" . $row->PURCHASE_DATE . "</td>
+                      <td>" . "$" . number_format((float)$row->PURCHASE_PRICE, 2, '.', '') . "</td>
+                      <td>" . $row->USER_NAME . "</td>
+                      <td>" . $row->MARKET_ITEM_ID . "</td>
+                  </tr>";        
+        }
+        echo "</table>";
+    }
+
+    function printSellerTransactions($result) { //prints results from a select statement
+        echo "<table>";
+        echo "<tr><th>Transaction ID</th>
+                  <th>Purchase Date</th>
+                  <th>Purchase Price</th>
+                  <th>Seller Name</th>
+                  <th>Item ID</th>
+             </tr>";
+    
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->TRANSACTION_ID . "</td>
+                      <td>" . $row->PURCHASE_DATE . "</td>
+                      <td>" . "$" . number_format((float)$row->PURCHASE_PRICE, 2, '.', '') . "</td>
+                      <td>" . $row->USER_NAME . "</td>
+                      <td>" . $row->MARKET_ITEM_ID . "</td>
+                  </tr>";        
+        }
+        echo "</table>";
     }
 
     if ($connection) {
@@ -38,24 +106,47 @@
     <tr><td> Email: </td> <td><?php echo $userEmail; ?></td></tr>
     <tr><td> Balance: </td> <td> <?php echo "$"; echo number_format((float)$userBalance, 2, '.', ''); ?></td></tr>
 </table>
-    
-<h3>Previous Transactions: </h3>
-<table>
-    <tr>
-        <th>Transaction ID</th>
-        <th>Purchase Date</th>
-        <th>Purchase Price</th>
-        <th>Credit Card Number</th>
-        <th>Buyer ID</th>
-        <th>Seller ID</th>
-        <th>Market Item ID</th>
-    </tr>
-    <tr>
+<br>
+<br>
+<head>
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+    border-spacing: 5px;
+}
 
-</table>
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+
+<h3>Purchase History: </h3>
+
+<table>
+<?php 
+    $result = getBuyerTransactions();
+    printBuyerTransactions($result); 
+?>
+<br>
+<br>
+<h3>Sales History: </h3>
+<?php
+    $result = getSellerTransactions();
+    printSellerTransactions($result); 
+?>
 
 <h1>Add Balance</h1>
-<form method="POST" action="user.php">
+<form method="POST" action="user.php" >
     <div class="container">
         <label for="CCNumBalance">Credit Card Number</label>
         <input type="text" placeholder="Credit Card Number" name="CCNumBalance" required>

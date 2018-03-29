@@ -115,6 +115,27 @@ insert into transaction_supervises values
 insert into transaction_supervises values
 (5, '16-JAN-2018', 10.00, '3333444455556666', 3, 1, 1, 4);
 
+insert into transaction_supervises values
+(6, '30-MAY-2017', 50.00, '1818181818181818', 4, 1, 1, 1);
+
+insert into transaction_supervises values
+(7, '01-APR-2018', 10.00, '1818181818181818', 4, 3, 4, 1);
+
+insert into transaction_supervises values
+(8, '04-JUN-2016', 300.00, '1818181818181818', 4, 2, 3, 1);
+
+insert into transaction_supervises values
+(9, '13-JUN-2017', 39.99, '1818181818181818', 4, 3, 2, 1);
+
+insert into transaction_supervises values
+(10, '01-JAN-2018', 1000.00, '1818181818181818', 3, 4, 1, 1);
+
+insert into transaction_supervises values
+(11, '31-OCT-2016', 140.50, '1818181818181818', 1, 4, 4, 1);
+
+insert into transaction_supervises values
+(12, '13-FEB-2018', 40.20, '1818181818181818', 1, 4, 3, 1);
+
 insert into monitors values
 (1,2,3);
 
