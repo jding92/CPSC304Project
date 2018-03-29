@@ -1,20 +1,25 @@
 
-<!-- login ui -->
 
 <?php
-
-//this tells the system that it's no longer just parsing 
-//html; it's now parsing PHP
+//login ui
+include('login.html');
 
 $success = True; //keep track of errors so it redirects the page only if there are no errors
-$db_conn = OCILogon("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+$db_conn = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 $user = "";
 $pass = "";
+$isAdmin = getUserStatus($user);
+
+// returns True if user is admin and false otherwise
+function getUserStatus($user) {
+
+	return False;
+}
 
 function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
 	//echo "<br>running ".$cmdstr."<br>";
 	global $db_conn, $success;
-	$statement = OCIParse($db_conn, $cmdstr); //There is a set of comments at the end of the file that describe some of the OCI specific functions and how they work
+	$statement = oci_parse($db_conn, $cmdstr); //There is a set of comments at the end of the file that describe some of the OCI specific functions and how they work
 
 	if (!$statement) {
 		echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
@@ -24,7 +29,7 @@ function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL com
 		$success = False;
 	}
 
-	$r = OCIExecute($statement, OCI_DEFAULT);
+	$r = oci_execute($statement);
 	if (!$r) {
 		echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
 		$e = oci_error($statement); // For OCIExecute errors pass the statementhandle
