@@ -1,3 +1,32 @@
+<h1>User Info</h1>
+<h2>ID: </h2>
+<h2>Name: </h2>
+<h2>Email: </h2>
+<h2>Balance: </h2>
+<h2>Previous Transactions: </h2>
+<table>
+    <tr>
+        <th>Transaction ID</th>
+        <th>Purchase Date</th>
+        <th>Purchase Price</th>
+        <th>Credit Card Number</th>
+        <th>Buyer ID</th>
+        <th>Seller ID</th>
+        <th>Market Item ID</th>
+    </tr>
+</table>
+<h1>Add Balance</h1>
+<form method="POST" action="user.php">
+    <div class="container">
+        <label for="CCNumBalance">Credit Card Number</label>
+        <input type="text" placeholder="Credit Card Number" name="CCNumBalance" required>
+        <br>
+        <label for="BalanceAmount">Amount to Add</label>
+        <input type="text" placeholder="Amount to Add" name="BalanceAmount" required>
+        <br>
+        <input type="submit" value="Submit" name="balanceSubmit">
+    </div>
+</form>
 <h1>Billing</h1>
 <table>
     <tr>
@@ -10,6 +39,7 @@
         <th>Phone Number</th>
     </tr>
 </table>
+<p>Add a new credit card.</p>
 <form method="POST" action="user.php">
     <div class="container">
         <label for="CCNum">Credit Card Number</label>
@@ -30,9 +60,10 @@
         <label for="CCPhoneNum">Phone Number</label>
         <input type="text" placeholder="Phone Number" name="CCPhoneNum" required>
         <br>
-        <input type="submit" value="Submit" name="billingSubmit">
+        <input type="submit" value="Insert" name="billingInsert">
     </div>
 </form>
+<p>Update an existing credit card.</p>
 <form method="POST" action="user.php">
     <div class="container">
         <label for="CCID">Credit Card ID</label>
@@ -56,7 +87,7 @@
         <label for="CCPhoneNumUpdate">Phone Number</label>
         <input type="text" placeholder="Phone Number" name="CCPhoneNumUpdate" required>
         <br>
-        <input type="submit" value="Submit" name="billingUpdateSubmit">
+        <input type="submit" value="Update" name="billingUpdateSubmit">
     </div>
 </form>
 <h1>Game Inventory</h1>
@@ -66,14 +97,6 @@
         <th>Title</th>
     </tr>
 </table>
-<form method="POST" action="user.php">
-    <div class="container">
-        <label for="GameTitle">Game Title</label>
-        <input type="text" placeholder="Game Title" name="GameTitle" required>
-        <br>
-        <input type="submit" value="Submit" name="gameSubmit">
-    </div>
-</form>
 <h1>Item Inventory</h1>
 <table>
     <tr>
@@ -84,17 +107,40 @@
         <th>Game ID</th>
     </tr>
 </table>
+<h1>Personal Listings</h1>
+<table>
+    <tr>
+        <th>Market Item ID</th>
+        <th>Item Name</th>
+        <th>Listed Date</th>
+        <th>Listed Price</th>
+        <th>Quantity</th>
+    </tr>
+</table>
+<p>Select an item ID and sell the item.</p>
 <form method="POST" action="user.php">
     <div class="container">
-        <label for="ItemName">Item Name</label>
-        <input type="text" placeholder="Item Name" name="ItemName" required>
+        <label for="ItemIDSell">Item ID</label>
+        <input type="text" placeholder="Item ID" name="ItemIDSell" required>
         <br>
-        <label for="Description">Description</label>
-        <input type="text" placeholder="Description" name="Description" required>
+        <label for="Quantity">Quantity</label>
+        <input type="text" placeholder="Quantity" name="Quantity" required>
         <br>
-        <label for="GameID">Game ID</label>
-        <input type="text" placeholder="Game ID" name="GameID" required>
+        <label for="Price">Price</label>
+        <input type="text" placeholder="Price" name="Price" required>
         <br>
-        <input type="submit" value="Submit" name="itemSubmit">
+        <input type="submit" value="Sell" name="sellSubmit">
+    </div>
+</form>
+<p>Select an item ID to update an existing listing.</p>
+<form method="POST" action="user.php">
+    <div class="container">
+        <label for="ItemIDSellUpdate">Item ID</label>
+        <input type="text" placeholder="Item ID" name="ItemIDSellUpdate" required>
+        <br>
+        <label for="PriceUpdate">Price</label>
+        <input type="text" placeholder="Price" name="PriceUpdate" required>
+        <br>
+        <input type="submit" value="Update" name="sellUpdateSubmit">
     </div>
 </form>

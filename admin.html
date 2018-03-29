@@ -17,3 +17,12 @@
         <th>Market Item ID</th>
     </tr>
 </table>
+<p>Input a transaction ID to revert the transaction.</p>
+<form method="POST" action="admin.php">
+    <div class="container">
+        <label for="TransactionID">Transaction ID</label>
+        <input type="text" placeholder="Transaction ID" name="TransactionID" required>
+        <br>
+        <input type="submit" value="Undo" name="transactionUndo">
+    </div>
+</form>
