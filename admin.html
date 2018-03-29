@@ -26,3 +26,19 @@
         <input type="submit" value="Undo" name="transactionUndo">
     </div>
 </form>
+<h1>Games</h1>
+<table>
+    <tr>
+        <th>Game ID</th>
+        <th>Game Title</th>
+    </tr>
+</table>
+<p>Delete a game from the system.</p>
+<form method="POST" action="admin.php">
+    <div class="container">
+        <label for="gameIDDelete">Game ID</label>
+        <input type="text" placeholder="Game ID" name="gameIDDelete" required>
+        <br>
+        <input type="submit" value="Delete" name="gameDelete">
+    </div>
+</form>
