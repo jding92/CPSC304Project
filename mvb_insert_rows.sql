@@ -56,7 +56,7 @@ insert into market_item values
 (5,5);
 
 insert into listing values
-(1, 1, '10-JAN-2018', 10.00, 20);
+(1, 1, '10-JAN-2018', 10.00, 2);
 
 insert into listing values
 (2, 2, '10-JAN-2018', 100.00, 1);
@@ -100,8 +100,35 @@ insert into item_belongsTo values
 insert into item_belongsTo values
 (5, 1, 'Biker Crate', 'Biker Crate', 4);
 
+insert into transaction_supervises values
+(1, '10-JAN-2018', 100.00, '5555666677778888', 5, 2, 2, 1);
 
+insert into transaction_supervises values
+(2, '13-JAN-2018', 20.00, '5555666677778888', 5, 3, 3, 1);
 
+insert into transaction_supervises values
+(3, '14-JAN-2018', 1.00, '2222333344445555', 2, 5, 5, 4);
+
+insert into transaction_supervises values
+(4, '15-JAN-2018', 0.55, '2222333344445555', 2, 5, 4, 4);
+
+insert into transaction_supervises values
+(5, '16-JAN-2018', 10.00, '3333444455556666', 3, 1, 1, 4);
+
+insert into monitors values
+(1,2,3);
+
+insert into monitors values
+(4,1,1);
+
+insert into monitors values
+(4,3,3);
+
+insert into monitors values
+(4,5,4);
+
+insert into monitors values
+(4,5,5);
 
 
 commit work;
