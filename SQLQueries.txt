@@ -1,0 +1,47 @@
+SQL Queries
+
+Join:
+
+SELECT l.id, s.user_name, i.item_name, g.game_title, l.listed_date, l.listed_price, l.quantity 
+                  FROM listing l 
+                  INNER JOIN users s ON s.user_id = l.user_id 
+                  INNER JOIN item_belongsto i ON i.item_id = l.market_item_id 
+                  INNER JOIN game g ON i.game_id = g.game_id
+
+Update: 
+
+UPDATE billing_info
+                    SET expiry_date = '$expiryDate', cvv = '$CVV', cardholder_name = '$name', address = '$address', phone_number = '$phoneNum', user_id = '$userId'
+                    WHERE creditcard_num = '$cardNum'
+
+Similar queries are used throughout the project.
+
+Division:
+
+SELECT user_id FROM market_item
+        WHERE item_id IN (
+          SELECT i.item_id FROM market_item m, item_belongsTo i, game g WHERE m.item_id = i.item_id AND i.game_id = g.game_id
+        )
+        GROUP BY user_id 
+        HAVING COUNT(*) = (
+          SELECT COUNT(*) FROM market_item m, item_belongsTo i, game g WHERE m.item_id = i.item_id AND i.game_id = g.game_id
+        )
+
+Nested Aggregations with Group By:
+
+SELECT Max(x.avg) AS MaxAvgPrice
+            FROM (
+                SELECT AVG(listed_price) as avg FROM listing, item_belongsTo WHERE listing.market_item_id = item_belongsTo.item_id GROUP BY item_belongsTo.game_id
+            ) x
+
+SELECT MIN(x.avg) AS MinAvgPrice
+            FROM (
+                SELECT AVG(listed_price) as avg FROM listing, item_belongsTo WHERE listing.market_item_id = item_belongsTo.item_id GROUP BY item_belongsTo.game_id
+            ) x
+
+Delete with cascade:
+DELETE FROM game WHERE game_id='$gameID'
+
+
+
+

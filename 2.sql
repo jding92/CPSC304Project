@@ -87,7 +87,7 @@ alter table billing_info
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 alter table market_item
-ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
 
 alter table users
 ADD FOREIGN KEY (user_TID) REFERENCES transaction_supervises(transaction_id)

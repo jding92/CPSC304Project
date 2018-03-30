@@ -207,12 +207,6 @@ Find the item(s) with the minimum or maximum price.
 </form>
 <!-- Nested aggregation with group-by -->
 <h2>Min/Max Average Item Price per Game</h2>
-<table>
-    <tr>
-        <th>Game Title</th>
-        <th>Average Item Price</th>
-    </tr>
-</table>
 Find the average item price for each Game, and then return the minimum or maximum across those averages.
 <?php nestedAggButtons() ?>
 <h2>Buy Item</h2> Select the Seller ID and Item ID to buy the item.

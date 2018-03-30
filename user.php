@@ -6,7 +6,7 @@
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
 
-    $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+    $connection = oci_connect("ora_n9e9", "a32457137", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 
     // takes a table and id column name and returns the max ID + 1
     function generateID($tableName, $colName) {
@@ -27,6 +27,7 @@
             return $maxID + 1;
         } 
     }
+
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
 
@@ -186,7 +187,7 @@
 
         $query = "SELECT g.game_title, i.item_name, i.item_description, i.item_quantity, i.item_id 
                   FROM item_belongsto i, market_item m, game g 
-                  WHERE i.item_id = m.item_id and m.user_id = '$userId' and i.game_id = g.game_id";
+                  WHERE i.item_id = m.item_id and m.user_id = '$userId' and i.game_id = g.game_id and i.item_quantity > 0";
         $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {
@@ -199,7 +200,7 @@
     function getPersonalListings() {
         global $userId, $connection;
 
-        $query = "SELECT l.market_item_id, i.item_name, l.listed_date, l.listed_price, l.quantity 
+        $query = "SELECT l.id, l.market_item_id, i.item_name, l.listed_date, l.listed_price, l.quantity 
                   FROM item_belongsTo i, market_item m, listing l 
                   WHERE i.item_id = m.item_id and m.item_id = l.market_item_id and m.user_id = '$userId' and l.user_id = '$userId'";
         $statement = oci_parse($connection, $query);
@@ -284,7 +285,8 @@
 
     function printPersonalListings($result) { //prints results from a select statement
         while (($row = oci_fetch_object($result)) != False) {
-            echo "<tr><td>" . $row->MARKET_ITEM_ID . "</td>
+            echo "<tr><td>" . $row->ID . "</td>
+                      <td>" . $row->MARKET_ITEM_ID . "</td>
                       <td>" . $row->ITEM_NAME . "</td>
                       <td>" . $row->LISTED_DATE . "</td>
                       <td>" . $row->LISTED_PRICE . "</td>
@@ -333,11 +335,35 @@
         return $flag;
     }
 
+    
+    function userQuantityGameItem($itemName, $quantity){
+        $flag = 'false';
+        $result = getItemsInventory();
+        while (($row = oci_fetch_object($result)) != False) {
+            $useritem = $row->ITEM_NAME;
+            $invNum = $row->ITEM_QUANTITY;
+            if($useritem == $itemName){
+                if($quantity <= $invNum){
+                    $flag = 'true';
+                    return $flag;
+                }
+                return $flag;
+            }
+            
+        }
+        return $flag;
+    }
+
     function sellSubmit($itemName, $quantity, $price){
         global $userId, $connection;
 
         if(userHasGameItem($itemName) == 'false'){
             echo "You do not have this game item";
+            return;
+        }
+        
+        if(userQuantityGameItem($itemName, $quantity) == 'false'){
+            echo "You have less than $quantity game item";
             return;
         }
 
@@ -351,19 +377,30 @@
 
         $date = date('d-M-Y');
 
-        $query = "INSERT INTO listing VALUES ($itemId, $userId, to_date('$date','DD-Mon-YYYY'), $price, $quantity)";
+        $listingID = generateID(listing, id);
+
+        $query = "INSERT INTO listing VALUES ($listingID, $itemId, $userId, to_date('$date','DD-Mon-YYYY'), $price, $quantity)";
         $statement = oci_parse($connection, $query);
 
-        echo $query;
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        
+        /*
+        //$query = "UPDATE item_belongsto SET user_balance = '$newBalance' WHERE user_name = '$username'";
+        $query = "DELETE FROM market_item WHERE user_id = '$userId' and item_id = '$itemId'";
+        $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {
             $error = oci_error($statement);
             echo htmlentities($error['message']);
         }else{
-            echo "successfully added ($itemId, $userId, $date, $price, $quantity)";
+            echo "successfully removed item: $itemName from inventory ";
         }
 
-        //TODO: delete item from inventory
+        */
 
     }
 
@@ -395,6 +432,34 @@
     if ($connection) {
         getUserInfo();
     }
+
+    if(isset($_POST['sellUpdateSubmit'])){
+        $listingID =  $_POST["ListingIDUpdate"];
+        $Price = $_POST["PriceUpdate"];
+        getUserInfo();
+        
+        $query = "UPDATE listing SET listed_price = '$Price' where id = '$listingID'";
+        $statement = oci_parse($connection, $query);
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+
+    }
+
+    if(isset($_POST['removeSubmit'])){
+        $listingID =  $_POST["ListingRemove"];
+        getUserInfo();
+        
+        $query = "DELETE FROM listing WHERE id = '$listingID'";
+        $statement = oci_parse($connection, $query);
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+
+    }
+
 
     if(isset($_POST['balanceSubmit'])){
         $addBalance =  $_POST["BalanceAmount"];
@@ -660,6 +725,7 @@ tr:nth-child(even) {
 <h1>Personal Listings</h1>
 <table>
     <tr>
+        <th>Listing ID</th>
         <th>Market Item ID</th>
         <th>Item Name</th>
         <th>Listed Date</th>
@@ -687,11 +753,11 @@ tr:nth-child(even) {
         <input type="submit" value="Sell" name="sellSubmit">
     </div>
 </form>
-<p>Select an item Name to update an existing listing.</p>
+<p>Update an existing listing.</p>
 <form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
-        <label for="ItemNameSellUpdate">Item Name</label>
-        <input type="text" placeholder="Item Name" name="ItemNameSellUpdate" required>
+        <label for="ListingIDUpdate">Listing ID</label>
+        <input type="text" placeholder="Item Name" name="ListingIDUpdate" required>
         <br>
         <label for="PriceUpdate">Price</label>
         <input type="text" placeholder="Price" name="PriceUpdate" required>
@@ -702,11 +768,8 @@ tr:nth-child(even) {
 <p>Remove an item Listing.</p>
 <form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
-        <label for="ItemNameRemove">Item Name</label>
-        <input type="text" placeholder="Item Name" name="ItemNameRemove" required>
-        <br>
-        <label for="QuantityRemove">Quantity</label>
-        <input type="text" placeholder="Quantity" name="QuantityRemove" required>
+        <label for="ListingRemove">Listing ID</label>
+        <input type="text" placeholder="Item Name" name="ListingRemove" required>
         <br>
         <input type="submit" value="Remove" name="removeSubmit">
     </div>
