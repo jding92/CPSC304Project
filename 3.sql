@@ -92,19 +92,19 @@ insert into market_item values
 (201,2);
 
 insert into listing values
-(1, 1, '10-JAN-2018', 10.00, 2);
+(200, 1, '10-JAN-2018', 10.00, 2);
 
 insert into listing values
-(2, 2, '10-JAN-2018', 100.00, 1);
+(201, 2, '10-JAN-2018', 100.00, 1);
 
 insert into listing values
-(3, 3, '11-JAN-2018', 20.00, 4);
+(300, 3, '11-JAN-2018', 20.00, 4);
 
 insert into listing values
-(4, 5, '12-JAN-2018', 0.55, 2);
+(301, 5, '12-JAN-2018', 0.55, 2);
 
 insert into listing values
-(5, 5, '13-JAN-2018', 1.00, 12);
+(400, 5, '13-JAN-2018', 1.00, 12);
 
 insert into game values
 (1, 'Skyrim', '12-MAR-2012');
