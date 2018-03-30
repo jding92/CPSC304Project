@@ -6,13 +6,27 @@
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
 
-<<<<<<< HEAD
     $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
-=======
 
-    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
->>>>>>> 84e2d5a5112fd69f9ba9814783bb296632f29882
+    // takes a table and id column name and returns the max ID + 1
+    function generateID($tableName, $colName) {
+        global $connection;
 
+        $query = "SELECT MAX($colName) FROM $tableName";
+        $statement = oci_parse($connection, $query);
+        
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo "invalid query: ";
+            echo htmlentities($error['message']);
+            return -1;
+        }
+        else {
+            $result = oci_fetch_array($statement);
+            $maxID = $result[0];
+            return $maxID + 1;
+        } 
+    }
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
 
@@ -89,7 +103,7 @@
         }
     }
 
-
+    $ID = generateID("users", "user_id");
 
     /*DEGUB
     function checkCredit(){
@@ -463,9 +477,16 @@
         }
     }
 ?>
-
+<?php 
+    isAdmin() 
+?>
+<form method="POST" action="<?php echo "listings.php?user=$username" ?>">
+  <div id="listingsButton" class="container">
+    <input type="submit" value="Listings" name="listings">
+  </div>
+</form>
+<br>
 <h3>User Info </h3>
-<?php isAdmin() ?>
 <table style="width:30%">
     <tr><td> ID: </td> <td><?php echo $userId; ?></td></tr>
     <tr><td> Username: </td> <td><?php echo $username; ?></td></tr>
