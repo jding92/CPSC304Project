@@ -56,32 +56,50 @@
             FROM (
                 SELECT AVG(listed_price) as avg FROM listing, item_belongsTo WHERE listing.market_item_id = item_belongsTo.item_id GROUP BY item_belongsTo.game_id
             ) x";
-         //$query = "SELECT * FROM listing";
         $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {
             $error = oci_error($statement);
             echo htmlentities($error['message']);
-        }$result = oci_fetch_object($statement);
-        $var = $result->ID;
-        echo $var;
+        }
 
-        // return $statement;
-    }
-
-    function printMinAverage($statement) {
         echo "<table>
               <tr>
                 <th>Minimum Average Price</th>
               </tr>";
 
-         while (($row = oci_fetch_object($statement)) != False) {
-            echo "HI";
-            echo "<tr><td>" . $row->MinAvgPrice . "</td>
+        $result = oci_fetch_object($statement);
+        $var = $result->MINAVGPRICE;
+        echo "<tr><td>" . $var . "</td>
                   </tr>";        
-            echo "</table>";
+        echo "</table>";
+    }
+
+    function getMaxAverage() {
+        global $connection;
+
+        $query = "SELECT Max(x.avg) AS MaxAvgPrice
+            FROM (
+                SELECT AVG(listed_price) as avg FROM listing, item_belongsTo WHERE listing.market_item_id = item_belongsTo.item_id GROUP BY item_belongsTo.game_id
+            ) x";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
         }
-      }
+
+        echo "<table>
+              <tr>
+                <th>Maximum Average Price</th>
+              </tr>";
+
+        $result = oci_fetch_object($statement);
+        $var = $result->MAXAVGPRICE;
+        echo "<tr><td>" . $var . "</td>
+                  </tr>";        
+        echo "</table>";
+    }
 
     function nestedAggButtons() {
       global $username;
@@ -100,7 +118,9 @@
         if (array_key_exists('minAverageSubmit', $_POST)) {
              getMinAverage();
             // printMinAverage($result);
-        }
+        } else if (array_key_exists('maxAverageSubmit', $_POST)) {
+             getMaxAverage();
+         }
     }
 ?>
 <head>
