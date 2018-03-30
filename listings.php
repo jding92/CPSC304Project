@@ -22,9 +22,13 @@
     function getListingInfo() {
         global $connection;
 
-        $query = "SELECT s.user_name, market_item_id,  from listing";
+        $query = "SELECT l.id, s.user_name, i.item_name, g.game_title, l.listed_date, l.listed_price, l.quantity 
+                  FROM listing l 
+                  INNER JOIN users s ON s.user_id = l.user_id 
+                  INNER JOIN item_belongsto i ON i.item_id = l.market_item_id 
+                  INNER JOIN game g ON i.game_id = g.game_id";
         $statement = oci_parse($connection, $query);
-
+        
         if (!oci_execute($statement)) {
             $error = oci_error($statement);
             echo htmlentities($error['message']);
@@ -32,14 +36,15 @@
         return $statement;
     }
 
-    function printBillingInfo($result) {
+    function printListingInfo($result) {
         while (($row = oci_fetch_object($result)) != False) {
-            echo "<tr><td>" . $row->CREDITCARD_NUM . "</td>
-                      <td>" . $row->EXPIRY_DATE . "</td>
-                      <td>" . $row->CVV . "</td>
-                      <td>" . $row->CARDHOLDER_NAME . "</td>
-                      <td>" . $row->ADDRESS . "</td>
-                      <td>" . $row->PHONE_NUMBER . "</td>
+            echo "<tr><td>" . $row->ID . "</td>
+                      <td>" . $row->USER_NAME . "</td>
+                      <td>" . $row->ITEM_NAME . "</td>
+                      <td>" . $row->GAME_TITLE . "</td>
+                      <td>" . $row->LISTED_DATE . "</td>
+                      <td>" . "$" . number_format((float)$row->LISTED_PRICE, 2, '.', '') . "</td>
+                      <td>" . $row->QUANTITY . "</td>
                   </tr>";        
         }
     }
@@ -49,18 +54,42 @@
         
     }
 ?>
+<head>
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+    border-spacing: 5px;
+}
 
-<h1>Listings</h1>
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+</head>
+
+<h3>Listings</h3>
 <table>
     <tr>
-        <th>Seller ID</th>
-        <th>Market Item ID</th>
+        <th>Listing ID</th>
+        <th>Seller Name</th>
         <th>Item Name</th>
         <th>Game Title</th>
         <th>Listed Date</th>
         <th>Listed Price</th>
         <th>Quantity</th>
     </tr>
+    <?php 
+        $result = getListingInfo();
+        printListingInfo($result);
+    ?>
 </table>
 <h2>Filters</h2>
 <!-- Selection/projection query -->
