@@ -120,9 +120,6 @@
         $statement1 = oci_parse($connection, $query1);
         $statement2 = oci_parse($connection, $query2);
         $statement3 = oci_parse($connection, $query3);
-        // oci_execute($statement1);
-        // oci_execute($statement2);
-        // oci_execute($statement3);
         if (!oci_execute($statement1)) {
             $error = oci_error($statement1);
             echo htmlentities($error['message']);
@@ -199,6 +196,51 @@
       echo "</table>";
     }
 
+    function divisionButton() {
+      echo "<form method=\"POST\" action=";
+      echo "\"admin.php?user=$username\">";
+      echo "<div class=\"container\">
+              <input type=\"submit\" value=\"Submit\" name=\"divisionSubmit\">
+          </div>
+      </form>";
+    }
+
+    function getDivision() {
+      global $connection;
+
+      $query = "SELECT user_id FROM market_item
+        WHERE item_id IN (
+          SELECT i.item_id FROM market_item m, item_belongsTo i, game g WHERE m.item_id = i.item_id AND i.game_id = g.game_id
+        )
+        GROUP BY user_id 
+        HAVING COUNT(*) = (
+          SELECT COUNT(*) FROM market_item m, item_belongsTo i, game g WHERE m.item_id = i.item_id AND i.game_id = g.game_id
+        )";
+      // $query = "SELECT min(m.user_id) 
+      //   FROM market_item m, item_belongsTo i, game g
+      //   WHERE m.item_id = i.item_id AND i.game_id = g.game_id AND g.game_title='DOTA 2'
+      //   GROUP BY g.game_title
+      //   HAVING min(m.user_id) = max(m.user_id)";
+      // $statement = oci_parse($connection, $query);
+
+      if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+      } else {
+        echo "<table>
+              <tr>
+                <th>User ID</th>
+              </tr>";
+
+        while (($row = oci_fetch_object($statement)) != False) {
+            echo "<tr><td>" . $row->USER_ID . "</td>
+                  </tr>";        
+        }
+        echo "</table>";
+      }
+
+    }
+
     if ($connection) {
       getUserInfo();
 
@@ -208,6 +250,8 @@
       } else if (array_key_exists('gameDelete', $_POST)) {
         $gameId = $_POST['gameIDDelete'];
         deleteGame($gameId);
+      } else if (array_key_exists('divisionSubmit', $_POST)) {
+        getDivision();
       }
     }
 ?>
@@ -233,14 +277,5 @@
 <p>Delete a game from the system.</p>
 <?php deleteGameButton(); ?>
 <!-- Division query -->
-Find the user IDs who have bought all the items for Skyrim.
-<table>
-    <tr>
-        <th>User ID</th>
-    </tr>
-</table>
-<form method="POST" action="admin.php">
-    <div class="container">
-        <input type="submit" value="Submit" name="divisionSubmit">
-    </div>
-</form>
+Find the user IDs who have bought all the items for DOTA 2.
+<?php divisionButton(); ?>
