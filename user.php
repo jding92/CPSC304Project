@@ -6,7 +6,12 @@
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
 
+<<<<<<< HEAD
     $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+=======
+
+    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+>>>>>>> 84e2d5a5112fd69f9ba9814783bb296632f29882
 
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
@@ -79,8 +84,12 @@
         if (!oci_execute($statement)) {
             $error = oci_error($statement);
             echo htmlentities($error['message']);
+        }else{
+            echo "successfully added $addBalance to your account! New balance = $newBalance";
         }
     }
+
+
 
     /*DEGUB
     function checkCredit(){
@@ -161,9 +170,9 @@
     function getItemsInventory() {
         global $userId, $connection;
 
-        $query = "SELECT g.game_title, i.item_name, i.item_description, i.item_quantity 
+        $query = "SELECT g.game_title, i.item_name, i.item_description, i.item_quantity, i.item_id 
                   FROM item_belongsto i, market_item m, game g 
-                  WHERE i.item_id = m.item_id and m.user_id = 4 and i.game_id = g.game_id";
+                  WHERE i.item_id = m.item_id and m.user_id = '$userId' and i.game_id = g.game_id";
         $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {
@@ -172,6 +181,22 @@
         }
         return $statement;
     }
+
+    function getPersonalListings() {
+        global $userId, $connection;
+
+        $query = "SELECT l.market_item_id, i.item_name, l.listed_date, l.listed_price, l.quantity 
+                  FROM item_belongsTo i, market_item m, listing l 
+                  WHERE i.item_id = m.item_id and m.item_id = l.market_item_id and m.user_id = '$userId' and l.user_id = '$userId'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
 
     function printBillingInfo($result) {
         while (($row = oci_fetch_object($result)) != False) {
@@ -184,6 +209,7 @@
                   </tr>";        
         }
     }
+
     function printBuyerTransactions($result) { //prints results from a select statement
         echo "<tr><th>Transaction ID</th>
                   <th>Purchase Date</th>
@@ -241,6 +267,93 @@
         }
     }
 
+
+    function printPersonalListings($result) { //prints results from a select statement
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->MARKET_ITEM_ID . "</td>
+                      <td>" . $row->ITEM_NAME . "</td>
+                      <td>" . $row->LISTED_DATE . "</td>
+                      <td>" . $row->LISTED_PRICE . "</td>
+                      <td>" . $row->QUANTITY . "</td>
+                  </tr>";         
+        }
+    }
+
+    /*
+    *   Add an item to sell 
+    */
+
+    if(isset($_POST['sellSubmit'])){
+        $itemName =  $_POST["ItemNameSell"];
+        $quantity = $_POST["Quantity"];
+        $price = $_POST["Price"];
+        getUserInfo();
+        if($itemName == ''){
+            echo "Adding Listing: No item name specified";
+            return;
+        }
+
+        if($quantity == ''){
+            echo "Adding Listing: No quantity specified";
+            return;
+        }
+
+        if($price == ''){
+            echo "Adding Listing: No price specified";
+            return;
+        }
+
+        sellSubmit($itemName, $quantity, $price);
+    }
+
+    function userHasGameItem($itemName){
+        $flag = 'false';
+        $result = getItemsInventory();
+        while (($row = oci_fetch_object($result)) != False) {
+            $useritem = $row->ITEM_NAME;
+                if($useritem == $itemName){
+                    $flag = 'true';
+                    return $flag;
+            }
+        }
+        return $flag;
+    }
+
+    function sellSubmit($itemName, $quantity, $price){
+        global $userId, $connection;
+
+        if(userHasGameItem($itemName) == 'false'){
+            echo "You do not have this game item";
+            return;
+        }
+
+        $result = getItemsInventory();
+        while (($row = oci_fetch_object($result)) != False) {
+            $useritem = $row->ITEM_NAME;
+                if($useritem == $itemName){
+                    $itemId = $row->ITEM_ID;
+            }
+        }
+
+        $date = date('d-M-Y');
+
+        $query = "INSERT INTO listing VALUES ($itemId, $userId, to_date('$date','DD-Mon-YYYY'), $price, $quantity)";
+        $statement = oci_parse($connection, $query);
+
+        echo $query;
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }else{
+            echo "successfully added ($itemId, $userId, $date, $price, $quantity)";
+        }
+
+        //TODO: delete item from inventory
+
+    }
+
+
     function isAdmin() {
         global $username, $userId, $connection;
         $query = "SELECT administrator_id FROM administrator 
@@ -263,6 +376,7 @@
             }
         }
     }
+
 
     if ($connection) {
         getUserInfo();
@@ -499,6 +613,7 @@ tr:nth-child(even) {
         <th>Purchase Date</th>
     </tr>
     <?php
+        getUserInfo();
         $result = getGamesInventory();
         printGamesInventory($result);
     ?>
@@ -519,6 +634,7 @@ tr:nth-child(even) {
         <th>Lowest Listed Price</th>        
     </tr>
     <?php
+        getUserInfo();
         $result = getItemsInventory();
         printItemsInventory($result);
     ?>
@@ -532,12 +648,17 @@ tr:nth-child(even) {
         <th>Listed Price</th>
         <th>Quantity</th>
     </tr>
+    <?php
+        getUserInfo();
+        $result = getPersonalListings();
+        printPersonalListings($result);
+    ?>
 </table>
-<p>Select an item ID and sell the item.</p>
-<form method="POST" action="user.php">
+<p>Select an item Name and sell the item.</p>
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
-        <label for="ItemIDSell">Item ID</label>
-        <input type="text" placeholder="Item ID" name="ItemIDSell" required>
+        <label for="ItemNameSell">Item Name</label>
+        <input type="text" placeholder="Item Name" name="ItemNameSell" required>
         <br>
         <label for="Quantity">Quantity</label>
         <input type="text" placeholder="Quantity" name="Quantity" required>
@@ -548,15 +669,27 @@ tr:nth-child(even) {
         <input type="submit" value="Sell" name="sellSubmit">
     </div>
 </form>
-<p>Select an item ID to update an existing listing.</p>
-<form method="POST" action="user.php">
+<p>Select an item Name to update an existing listing.</p>
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
-        <label for="ItemIDSellUpdate">Item ID</label>
-        <input type="text" placeholder="Item ID" name="ItemIDSellUpdate" required>
+        <label for="ItemNameSellUpdate">Item Name</label>
+        <input type="text" placeholder="Item Name" name="ItemNameSellUpdate" required>
         <br>
         <label for="PriceUpdate">Price</label>
         <input type="text" placeholder="Price" name="PriceUpdate" required>
         <br>
         <input type="submit" value="Update" name="sellUpdateSubmit">
+    </div>
+</form>
+<p>Remove an item Listing.</p>
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
+    <div class="container">
+        <label for="ItemNameRemove">Item Name</label>
+        <input type="text" placeholder="Item Name" name="ItemNameRemove" required>
+        <br>
+        <label for="QuantityRemove">Quantity</label>
+        <input type="text" placeholder="Quantity" name="QuantityRemove" required>
+        <br>
+        <input type="submit" value="Remove" name="removeSubmit">
     </div>
 </form>
