@@ -3,7 +3,7 @@
 include('login.html');
 
 $success = True; //keep track of errors so it redirects the page only if there are no errors
-$db_conn = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+$db_conn = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 $user = "";
 $pass = "";
 $isAdmin = getUserStatus($user);

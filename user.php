@@ -73,7 +73,7 @@
 
         $query = "SELECT g.game_title, i.item_name, i.item_description, i.item_quantity 
                   FROM item_belongsto i, market_item m, game g 
-                  WHERE i.item_id = m.item_id and m.user_id = '$userId' and i.game_id = g.game_id";
+                  WHERE i.item_id = m.item_id and m.user_id = 4 and i.game_id = g.game_id";
         $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {
