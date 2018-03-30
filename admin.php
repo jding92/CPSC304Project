@@ -5,7 +5,7 @@
     $userEmail = isset($userEmail) ? $userEmail : '';
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
-    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+    $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
@@ -256,6 +256,32 @@
     }
 ?>
 
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
+  <div id="homeButton" class="container">
+    <input type="submit" value="Homepage" name="homepage">
+  </div>
+</form>
+
+<head>
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+    border-spacing: 5px;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+</head>
 <h1>Listings Monitored</h1>
 <?php
   $result = getListingsMonitored();
