@@ -74,6 +74,9 @@ insert into market_item values
 (20,5);
 
 insert into market_item values
+(300,4);
+
+insert into market_item values
 (301,4);
 
 insert into market_item values
@@ -81,9 +84,6 @@ insert into market_item values
 
 insert into market_item values
 (401,4);
-
-insert into market_item values
-(300,4);
 
 insert into market_item values
 (200,2);
@@ -155,7 +155,7 @@ insert into item_belongsTo values
 (400, 2, 'A rare crate that contains a cosmetic skin for a BATTLEGROUNDS gun', 'Biker Crate', 4);
 
 insert into item_belongsTo values
-(401, 5, 'A crate that contains a cosmetic skin for a BATTLEGROUNDS gun', 'Triumph Crate', 4)
+(401, 5, 'A crate that contains a cosmetic skin for a BATTLEGROUNDS gun', 'Triumph Crate', 4);
 
 insert into transaction_supervises values
 (1, '10-JAN-2018', 100.00, '5555666677778888', 5, 2, 2, 1);

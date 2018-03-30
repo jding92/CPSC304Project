@@ -24,6 +24,19 @@
             $userBalance = $result->USER_BALANCE;
         }      
     }
+    
+    function getBillingInfo() {
+        global $userId, $connection;
+
+        $query = "select * from billing_info where user_id = '$userId'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
 
     function getBuyerTransactions() {
         global $userId, $connection;
@@ -83,6 +96,17 @@
         return $statement;
     }
 
+    function printBillingInfo($result) {
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->CREDITCARD_NUM . "</td>
+                      <td>" . $row->EXPIRY_DATE . "</td>
+                      <td>" . $row->CVV . "</td>
+                      <td>" . $row->CARDHOLDER_NAME . "</td>
+                      <td>" . $row->ADDRESS . "</td>
+                      <td>" . $row->PHONE_NUMBER . "</td>
+                  </tr>";        
+        }
+    }
     function printBuyerTransactions($result) { //prints results from a select statement
         echo "<tr><th>Transaction ID</th>
                   <th>Purchase Date</th>
@@ -191,7 +215,7 @@ tr:nth-child(even) {
     printSellerTransactions($result); 
 ?>
 
-<h1>Add Balance</h1>
+<h3>Add Balance</h3>
 <form method="POST" action="user.php" >
     <div class="container">
         <label for="CCNumBalance">Credit Card Number</label>
@@ -203,10 +227,9 @@ tr:nth-child(even) {
         <input type="submit" value="Submit" name="balanceSubmit">
     </div>
 </form>
-<h1>Billing</h1>
-<table>
+<h3>Billing</h3>
+<table style="width:80%">
     <tr>
-        <th>ID</th>
         <th>Credit Card Number</th>
         <th>Expiry Date</th>
         <th>CVV</th>
@@ -214,7 +237,14 @@ tr:nth-child(even) {
         <th>Address</th>
         <th>Phone Number</th>
     </tr>
+    <?php
+        $result = getBillingInfo();
+        printBillingInfo($result);
+    ?>
 </table>
+<br>
+<br>
+
 <p>Add a new credit card.</p>
 <form method="POST" action="user.php">
     <div class="container">
