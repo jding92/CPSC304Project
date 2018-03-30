@@ -5,19 +5,19 @@ commit;
 
 
 insert into users values
-(1, 'GYao', '16381139', 'ginayao1995@hotmail.com', 1000.00, null, null);
+(1, 'GYao', '16381139', 'ginayao1995@hotmail.com', 1000.00, null);
 
 insert into users values 
-(2, 'LShao', '32457137', 'yiwenlilyshao@gmail.com', 0.00, null, null);
+(2, 'LShao', '32457137', 'yiwenlilyshao@gmail.com', 0.00, null);
 
 insert into users values
-(3, 'PTee', '57599136', 'patrick.455@hotmail.com', 100.00, null, null);
+(3, 'PTee', '57599136', 'patrick.455@hotmail.com', 100.00, null);
 
 insert into users values
-(4, 'JDing', '48540158', 'jackding92@alumni.ubc.ca', 100000.00, null, null);
+(4, 'JDing', '48540158', 'jackding92@alumni.ubc.ca', 100000.00, null);
 
 insert into users values
-(5, 'BZhang', 'tzuyu', 'beiweizhang@gmail.com', 0.25, null, null);
+(5, 'RagingBob', 'tzuyu', 'beiweizhang@gmail.com', 0.25, null);
 
 insert into administrator values
 (1);

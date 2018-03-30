@@ -1,12 +1,13 @@
 create table billing_info
 ( 
-	creditcard_num varchar(16) PRIMARY KEY,
+	creditcard_num varchar(16),
 	expiry_date varchar(4),
 	cvv varchar(3),
 	cardholder_name varchar(20),
 	address varchar(50),
 	phone_number varchar(10),
-	user_id integer NOT NULL
+	user_id integer NOT NULL,
+	PRIMARY KEY(user_id)
 );
 
 create table market_item
@@ -23,8 +24,7 @@ create table users
 	user_email varchar(35),
 	user_balance decimal(14,2),
 	user_TID integer,
-	user_creditcard varchar(16) UNIQUE,
-	CONSTRAINT UC_user UNIQUE (user_name, user_email, user_creditcard)
+	CONSTRAINT UC_user UNIQUE (user_name, user_email)
 );
 
 create table listing
@@ -84,14 +84,13 @@ create table monitors
 
 
 alter table billing_info
-ADD FOREIGN KEY (user_id) REFERENCES users(user_id); 
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 alter table market_item
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 alter table users
 ADD FOREIGN KEY (user_TID) REFERENCES transaction_supervises(transaction_id)
-ADD FOREIGN KEY (user_creditcard) REFERENCES billing_info(creditcard_num);
 
 alter table listing
 ADD FOREIGN KEY (market_item_id) REFERENCES market_item(item_id)

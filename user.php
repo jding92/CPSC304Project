@@ -5,7 +5,10 @@
     $userEmail = isset($userEmail) ? $userEmail : '';
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
+
     $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+
+
 
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
@@ -37,6 +40,89 @@
         }
         return $statement;
     }
+
+    if(isset($_POST['balanceSubmit'])){
+        $addBalance =  $_POST["BalanceAmount"];
+        $creditcard = $_POST["CCNumBalance"];
+        getUserInfo();
+        addBalance($addBalance, $creditcard);
+    }
+
+    function isValidCreditCard($creditcard){
+        global $connection, $username, $userId;
+        $flag = 'false';
+
+        $query = "SELECT creditcard_num FROM billing_info WHERE user_id = '$userId'";
+        $statement = oci_parse($connection, $query);
+
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+            echo "error";
+        }else {
+            while(($row = oci_fetch_object($statement)) != False){
+                $userCreditCard = $row->CREDITCARD_NUM;
+                if($userCreditCard == $creditcard){
+                    $flag = 'true';
+                    return $flag;
+                }
+            }
+        }
+        return $flag;
+    }
+
+    function addBalance($addBalance, $creditcard){
+        global $userBalance, $connection, $username;
+
+        if(isValidCreditCard($creditcard) == 'false'){
+            echo "Credit card not on file";
+            return;
+        }
+
+        $newBalance = $addBalance + $userBalance; 
+
+        $query = "UPDATE users SET user_balance = '$newBalance' WHERE user_name = '$username'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+    }
+
+    /*DEGUB
+    function checkCredit(){
+        global $userBalance, $connection, $username;
+
+        $query = "SELECT user_creditcard FROM users WHERE user_name = '$username'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }else {
+            $result = oci_fetch_object($statement);
+            $userBalance = $result->user_creditcard;
+            echo $userBalance;
+        }
+    }
+
+    function checkBalance(){
+        global $userBalance, $connection, $username;
+
+        $query = "SELECT user_balance FROM users WHERE user_name = '$username'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }else {
+            $result = oci_fetch_object($statement);
+            $userBalance = $result->USER_BALANCE;
+            echo $userBalance;
+        }
+    }*/
 
     function getBuyerTransactions() {
         global $userId, $connection;
@@ -200,7 +286,7 @@ tr:nth-child(even) {
 </head>
 <body>
 
-<h3>Purchase History: </h3>
+<h3>Purchase History </h3>
 
 <table>
 <?php 
@@ -209,14 +295,16 @@ tr:nth-child(even) {
 ?>
 <br>
 <br>
-<h3>Sales History: </h3>
+<h3>Sales History </h3>
 <?php
     $result = getSellerTransactions();
     printSellerTransactions($result); 
 ?>
+<br>
+<br>
 
 <h3>Add Balance</h3>
-<form method="POST" action="user.php" >
+<form method="POST" action="<?php echo "user.php?user=$username" ?>" >
     <div class="container">
         <label for="CCNumBalance">Credit Card Number</label>
         <input type="text" placeholder="Credit Card Number" name="CCNumBalance" required>
@@ -227,6 +315,8 @@ tr:nth-child(even) {
         <input type="submit" value="Submit" name="balanceSubmit">
     </div>
 </form>
+<br>
+
 <h3>Billing</h3>
 <table style="width:80%">
     <tr>
