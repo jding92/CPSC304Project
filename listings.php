@@ -70,7 +70,7 @@
 
         $result = oci_fetch_object($statement);
         $var = $result->MINAVGPRICE;
-        echo "<tr><td>" . $var . "</td>
+        echo "<tr><td>" . "$" . number_format((float)$var, 2, '.', '') . "</td>
                   </tr>";        
         echo "</table>";
     }
@@ -96,7 +96,7 @@
 
         $result = oci_fetch_object($statement);
         $var = $result->MAXAVGPRICE;
-        echo "<tr><td>" . $var . "</td>
+        echo "<tr><td>" . "$" . number_format((float)$var, 2, '.', '') . "</td>
                   </tr>";        
         echo "</table>";
     }
