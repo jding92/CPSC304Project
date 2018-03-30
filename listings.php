@@ -52,31 +52,36 @@
     function getMinAverage() {
         global $connection;
 
-        // $query = "SELECT MIN(x.avg) AS MinAvgPrice
-        //     FROM (
-        //         SELECT AVG(listed_price) as avg FROM listing, item_belongsTo WHERE listing.market_item_id = item_belongsTo.item_id GROUP BY item_belongsTo.game_id
-        //     ) x";
-        $query = "SELECT * FROM listing";
+        $query = "SELECT MIN(x.avg) AS MinAvgPrice
+            FROM (
+                SELECT AVG(listed_price) as avg FROM listing, item_belongsTo WHERE listing.market_item_id = item_belongsTo.item_id GROUP BY item_belongsTo.game_id
+            ) x";
+         //$query = "SELECT * FROM listing";
         $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {
             $error = oci_error($statement);
             echo htmlentities($error['message']);
-            echo "bye";
-          } else {
-            echo "<table>
-                  <tr>
-                    <th>Minimum Average Price</th>
-                  </tr>";
+        }$result = oci_fetch_object($statement);
+        $var = $result->ID;
+        echo $var;
 
-            while (($row = oci_fetch_object($statement) != False)) {
-                echo "HI";
-                echo "<tr><td>" . $row->ID . "</td>
-                      </tr>";        
-                echo "</table>";
-            }
-          }
+        // return $statement;
     }
+
+    function printMinAverage($statement) {
+        echo "<table>
+              <tr>
+                <th>Minimum Average Price</th>
+              </tr>";
+
+         while (($row = oci_fetch_object($statement)) != False) {
+            echo "HI";
+            echo "<tr><td>" . $row->MinAvgPrice . "</td>
+                  </tr>";        
+            echo "</table>";
+        }
+      }
 
     function nestedAggButtons() {
       global $username;
@@ -93,7 +98,8 @@
         getUserInfo();
         
         if (array_key_exists('minAverageSubmit', $_POST)) {
-            getMinAverage();
+             getMinAverage();
+            // printMinAverage($result);
         }
     }
 ?>
