@@ -6,7 +6,7 @@
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
 
-    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+    $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
