@@ -5,7 +5,10 @@
     $userEmail = isset($userEmail) ? $userEmail : '';
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
-    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+
+    $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+
+
 
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
@@ -24,6 +27,102 @@
             $userBalance = $result->USER_BALANCE;
         }      
     }
+    
+    function getBillingInfo() {
+        global $userId, $connection;
+
+        $query = "select * from billing_info where user_id = '$userId'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
+    if(isset($_POST['balanceSubmit'])){
+        $addBalance =  $_POST["BalanceAmount"];
+        $creditcard = $_POST["CCNumBalance"];
+        getUserInfo();
+        addBalance($addBalance, $creditcard);
+    }
+
+    function isValidCreditCard($creditcard){
+        global $connection, $username, $userId;
+        $flag = 'false';
+
+        $query = "SELECT creditcard_num FROM billing_info WHERE user_id = '$userId'";
+        $statement = oci_parse($connection, $query);
+
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+            echo "error";
+        }else {
+            while(($row = oci_fetch_object($statement)) != False){
+                $userCreditCard = $row->CREDITCARD_NUM;
+                if($userCreditCard == $creditcard){
+                    $flag = 'true';
+                    return $flag;
+                }
+            }
+        }
+        return $flag;
+    }
+
+    function addBalance($addBalance, $creditcard){
+        global $userBalance, $connection, $username;
+
+        if(isValidCreditCard($creditcard) == 'false'){
+            echo "Credit card not on file";
+            return;
+        }
+
+        $newBalance = $addBalance + $userBalance; 
+
+        $query = "UPDATE users SET user_balance = '$newBalance' WHERE user_name = '$username'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+    }
+
+    /*DEGUB
+    function checkCredit(){
+        global $userBalance, $connection, $username;
+
+        $query = "SELECT user_creditcard FROM users WHERE user_name = '$username'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }else {
+            $result = oci_fetch_object($statement);
+            $userBalance = $result->user_creditcard;
+            echo $userBalance;
+        }
+    }
+
+    function checkBalance(){
+        global $userBalance, $connection, $username;
+
+        $query = "SELECT user_balance FROM users WHERE user_name = '$username'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }else {
+            $result = oci_fetch_object($statement);
+            $userBalance = $result->USER_BALANCE;
+            echo $userBalance;
+        }
+    }*/
 
     function getBuyerTransactions() {
         global $userId, $connection;
@@ -55,6 +154,45 @@
         return $statement;
     }
 
+    function getGamesInventory() {
+        global $userId, $connection;
+
+        $query = "SELECT game_title, game_purchase_date FROM game, market_item WHERE game_id = item_id and user_id = '$userId'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
+    function getItemsInventory() {
+        global $userId, $connection;
+
+        $query = "SELECT g.game_title, i.item_name, i.item_description, i.item_quantity 
+                  FROM item_belongsto i, market_item m, game g 
+                  WHERE i.item_id = m.item_id and m.user_id = 4 and i.game_id = g.game_id";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
+    function printBillingInfo($result) {
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->CREDITCARD_NUM . "</td>
+                      <td>" . $row->EXPIRY_DATE . "</td>
+                      <td>" . $row->CVV . "</td>
+                      <td>" . $row->CARDHOLDER_NAME . "</td>
+                      <td>" . $row->ADDRESS . "</td>
+                      <td>" . $row->PHONE_NUMBER . "</td>
+                  </tr>";        
+        }
+    }
     function printBuyerTransactions($result) { //prints results from a select statement
         echo "<tr><th>Transaction ID</th>
                   <th>Purchase Date</th>
@@ -94,26 +232,21 @@
         echo "</table>";
     }
 
-    function isAdmin() {
-        global $username, $userId, $connection;
-        $query = "SELECT administrator_id FROM administrator 
-            WHERE '$userId' = administrator_id";
-        $statement = oci_parse($connection, $query);
-
-        if (!oci_execute($statement)) {
-            $error = oci_error($statement);
-            echo htmlentities($error['message']);
+    function printGamesInventory($result) { //prints results from a select statement
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->GAME_TITLE . "</td>
+                      <td>" . $row->GAME_PURCHASE_DATE . "</td>
+                  </tr>";        
         }
-        else {
-            $result = oci_fetch_object($statement);
-            if ($result != False) {
-                echo "<form method=\"POST\" action=";
-                echo "\"admin.php?user=$username\">";
-                echo "<div id=\"adminButton\" class=\"container\">
-                    <input type=\"submit\" value=\"Admin Page\" name=\"adminPage\">
-                    </div>
-                </form>";
-            }
+    }
+
+    function printItemsInventory($result) { //prints results from a select statement
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->GAME_TITLE . "</td>
+                      <td>" . $row->ITEM_NAME . "</td>
+                      <td style='width:20%'>" . $row->ITEM_DESCRIPTION . "</td>
+                      <td>" . $row->ITEM_QUANTITY . "</td>
+                  </tr>";        
         }
     }
 
@@ -123,7 +256,6 @@
 ?>
 
 <h3>User Info </h3>
-<?php isAdmin() ?>
 <table style="width:30%">
     <tr><td> ID: </td> <td><?php echo $userId; ?></td></tr>
     <tr><td> Username: </td> <td><?php echo $username; ?></td></tr>
@@ -154,7 +286,7 @@ tr:nth-child(even) {
 </head>
 <body>
 
-<h3>Purchase History: </h3>
+<h3>Purchase History </h3>
 
 <table>
 <?php 
@@ -163,14 +295,16 @@ tr:nth-child(even) {
 ?>
 <br>
 <br>
-<h3>Sales History: </h3>
+<h3>Sales History </h3>
 <?php
     $result = getSellerTransactions();
     printSellerTransactions($result); 
 ?>
+<br>
+<br>
 
-<h1>Add Balance</h1>
-<form method="POST" action="user.php" >
+<h3>Add Balance</h3>
+<form method="POST" action="<?php echo "user.php?user=$username" ?>" >
     <div class="container">
         <label for="CCNumBalance">Credit Card Number</label>
         <input type="text" placeholder="Credit Card Number" name="CCNumBalance" required>
@@ -181,10 +315,11 @@ tr:nth-child(even) {
         <input type="submit" value="Submit" name="balanceSubmit">
     </div>
 </form>
-<h1>Billing</h1>
-<table>
+<br>
+
+<h3>Billing</h3>
+<table style="width:80%">
     <tr>
-        <th>ID</th>
         <th>Credit Card Number</th>
         <th>Expiry Date</th>
         <th>CVV</th>
@@ -192,7 +327,14 @@ tr:nth-child(even) {
         <th>Address</th>
         <th>Phone Number</th>
     </tr>
+    <?php
+        $result = getBillingInfo();
+        printBillingInfo($result);
+    ?>
 </table>
+<br>
+<br>
+
 <p>Add a new credit card.</p>
 <form method="POST" action="user.php">
     <div class="container">
@@ -244,23 +386,40 @@ tr:nth-child(even) {
         <input type="submit" value="Update" name="billingUpdateSubmit">
     </div>
 </form>
-<h1>Game Inventory</h1>
+<br>
+<br>
+
+<h3>Game Inventory</h3>
+
 <table>
     <tr>
-        <th>ID</th>
         <th>Title</th>
+        <th>Purchase Date</th>
     </tr>
+    <?php
+        $result = getGamesInventory();
+        printGamesInventory($result);
+    ?>
 </table>
-<h1>Item Inventory</h1>
-<table>
+<br>
+<br>
+
+<h3>Item Inventory</h3>
+
+<table style="width:100%">
     <tr>
-        <th>ID</th>
-        <th>Name</th>
+        <th>Game Title</th>
+        <th>Item Name</th>
         <th>Description</th>
         <th>Quantity</th>
-        <th>Game ID</th>
-        <th>Game Title</th>
+        <th>Average Listed Price</th>
+        <th>Highest Listed Pirce</th>
+        <th>Lowest Listed Price</th>        
     </tr>
+    <?php
+        $result = getItemsInventory();
+        printItemsInventory($result);
+    ?>
 </table>
 <h1>Personal Listings</h1>
 <table>

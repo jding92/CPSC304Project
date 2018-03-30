@@ -5,19 +5,19 @@ commit;
 
 
 insert into users values
-(1, 'GYao', '16381139', 'ginayao1995@hotmail.com', 1000.00, null, null);
+(1, 'GYao', '16381139', 'ginayao1995@hotmail.com', 1000.00, null);
 
 insert into users values 
-(2, 'LShao', '32457137', 'yiwenlilyshao@gmail.com', 0.00, null, null);
+(2, 'LShao', '32457137', 'yiwenlilyshao@gmail.com', 0.00, null);
 
 insert into users values
-(3, 'PTee', '57599136', 'patrick.455@hotmail.com', 100.00, null, null);
+(3, 'PTee', '57599136', 'patrick.455@hotmail.com', 100.00, null);
 
 insert into users values
-(4, 'JDing', '48540158', 'jackding92@alumni.ubc.ca', 100000.00, null, null);
+(4, 'JDing', '48540158', 'jackding92@alumni.ubc.ca', 100000.00, null);
 
 insert into users values
-(5, 'BZhang', 'tzuyu', 'beiweizhang@gmail.com', 0.25, null, null);
+(5, 'RagingBob', 'tzuyu', 'beiweizhang@gmail.com', 0.25, null);
 
 insert into administrator values
 (1);
@@ -50,10 +50,46 @@ insert into market_item values
 (3,3);
 
 insert into market_item values
-(4,5);
+(33,4);
+
+insert into market_item values
+(4,4);
+
+insert into market_item values
+(11,4);
+
+insert into market_item values
+(7,4);
+
+insert into market_item values
+(44,5);
 
 insert into market_item values
 (5,5);
+
+insert into market_item values
+(6,4);
+
+insert into market_item values
+(20,5);
+
+insert into market_item values
+(300,4);
+
+insert into market_item values
+(301,4);
+
+insert into market_item values
+(400,4);
+
+insert into market_item values
+(401,4);
+
+insert into market_item values
+(200,2);
+
+insert into market_item values
+(201,2);
 
 insert into listing values
 (1, 1, '10-JAN-2018', 10.00, 2);
@@ -71,34 +107,55 @@ insert into listing values
 (5, 5, '13-JAN-2018', 1.00, 12);
 
 insert into game values
-(1, 'Skyrim', '23:59:59');
+(1, 'Skyrim', '12-MAR-2012');
 
 insert into game values
-(2, 'CS:GO', '10:50:50');
+(11, 'Skyrim', '30-APR-2011');
+
+insert into game values
+(2, 'CS:GO', '10-JAN-2014');
 
 insert into game values 
-(3, 'DOTA 2', '03:00:00');
+(3, 'DOTA 2', '28-FEB-2013');
+
+insert into game values 
+(33, 'DOTA 2', '04-MAY-2014');
 
 insert into game values
-(4, 'Pubg', '00:00:22');
+(4, 'PLAYERUNKNOWN''S BATTLEGROUNDS', '30-DEC-2016');
 
 insert into game values
-(5, 'Stardew Valley', '10:00:00');
+(44, 'PLAYERUNKNOWN''S BATTLEGROUNDS', '12-OCT-2017');
+
+insert into game values
+(5, 'Stardew Valley', '29-MAY-2015');
+
+insert into game values
+(6, 'Fortnite', '30-JAN-2018');
+
+insert into game values
+(7, 'Civilization V', '12-JUL-2012');
+
+insert into game values
+(20, 'Hatoful Boyfriend', '10-SEP-2011');
 
 insert into item_belongsTo values
-(1, 1, 'CS:GO Base Grade Container', 'Clutch Case', 2);
+(200, 1, 'CS:GO Base Grade Container', 'Clutch Case', 2);
 
 insert into item_belongsTo values
-(2, 1, 'This key only opens Clutch cases', 'Clutch Case Key', 2);
+(201, 1, 'This key only opens Clutch cases', 'Clutch Case Key', 2);
 
 insert into item_belongsTo values
-(3, 1, 'Before the age of Gaster, even the most adept of mages would turn to flee with a burst of defensive magic when facing the close-quarters charge of a well-armed opponent.', 'Magus Accord', 3);
+(300, 1, 'Before the age of Gaster, even the most adept of mages would turn to flee with a burst of defensive magic when facing the close-quarters charge of a well-armed opponent.', 'Magus Accord', 3);
 
 insert into item_belongsTo values
-(4, 1, 'At all times the Anti-Mage feels the flames of defining loss burning against his back, pushing him ever forward in pursuit of his blood-sworn oath', 'Origins of Faith', 3);
+(301, 1, 'At all times the Anti-Mage feels the flames of defining loss burning against his back, pushing him ever forward in pursuit of his blood-sworn oath', 'Origins of Faith', 3);
 
 insert into item_belongsTo values
-(5, 1, 'Biker Crate', 'Biker Crate', 4);
+(400, 2, 'A rare crate that contains a cosmetic skin for a BATTLEGROUNDS gun', 'Biker Crate', 4);
+
+insert into item_belongsTo values
+(401, 5, 'A crate that contains a cosmetic skin for a BATTLEGROUNDS gun', 'Triumph Crate', 4);
 
 insert into transaction_supervises values
 (1, '10-JAN-2018', 100.00, '5555666677778888', 5, 2, 2, 1);
