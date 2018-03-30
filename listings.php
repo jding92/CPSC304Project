@@ -1,6 +1,6 @@
 <?php
     $username = $_GET['user'];
-    $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
+    $connection = oci_connect("ora_z8b0b", "a16381139", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
@@ -49,9 +49,58 @@
         }
     }
 
+    function getMinAverage() {
+        global $connection;
+
+        $query = "SELECT MIN(x.avg) AS MinAvgPrice
+            FROM (
+                SELECT AVG(listed_price) as avg FROM listing, item_belongsTo WHERE listing.market_item_id = item_belongsTo.item_id GROUP BY item_belongsTo.game_id
+            ) x";
+         //$query = "SELECT * FROM listing";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }$result = oci_fetch_object($statement);
+        $var = $result->ID;
+        echo $var;
+
+        // return $statement;
+    }
+
+    function printMinAverage($statement) {
+        echo "<table>
+              <tr>
+                <th>Minimum Average Price</th>
+              </tr>";
+
+         while (($row = oci_fetch_object($statement)) != False) {
+            echo "HI";
+            echo "<tr><td>" . $row->MinAvgPrice . "</td>
+                  </tr>";        
+            echo "</table>";
+        }
+      }
+
+    function nestedAggButtons() {
+      global $username;
+      echo "<form method=\"POST\" action=";
+      echo "\"listings.php?user=$username\">";
+      echo "<div class=\"container\">
+                <input type=\"submit\" value=\"Minimum\" name=\"minAverageSubmit\">
+                <input type=\"submit\" value=\"Maximum\" name=\"maxAverageSubmit\">
+            </div>
+        </form>";
+    }
+
     if ($connection) {
         getUserInfo();
         
+        if (array_key_exists('minAverageSubmit', $_POST)) {
+             getMinAverage();
+            // printMinAverage($result);
+        }
     }
 ?>
 
@@ -145,12 +194,7 @@ Find the item(s) with the minimum or maximum price.
     </tr>
 </table>
 Find the average item price for each Game, and then return the minimum or maximum across those averages.
-<form method="POST" action="listings.php">
-    <div class="container">
-        <input type="submit" value="Minimum" name="minAverageSubmit">
-        <input type="submit" value="Maximum" name="maxAverageSubmit">
-    </div>
-</form>
+<?php nestedAggButtons() ?>
 <h2>Buy Item</h2> Select the Seller ID and Item ID to buy the item.
 <form method="POST" action="listings.php">
     <div class="container">
