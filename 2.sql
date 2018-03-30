@@ -7,7 +7,7 @@ create table billing_info
 	address varchar(50),
 	phone_number varchar(10),
 	user_id integer NOT NULL,
-	PRIMARY KEY(user_id)
+	PRIMARY KEY(creditcard_num)
 );
 
 create table market_item

@@ -8,8 +8,6 @@
 
     $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 
-
-
     function getUserInfo() {
         global $userId, $username, $userEmail, $userBalance, $userTransactions, $connection;
 
@@ -41,13 +39,6 @@
         return $statement;
     }
 
-    if(isset($_POST['balanceSubmit'])){
-        $addBalance =  $_POST["BalanceAmount"];
-        $creditcard = $_POST["CCNumBalance"];
-        getUserInfo();
-        addBalance($addBalance, $creditcard);
-    }
-
     function isValidCreditCard($creditcard){
         global $connection, $username, $userId;
         $flag = 'false';
@@ -76,7 +67,7 @@
         global $userBalance, $connection, $username;
 
         if(isValidCreditCard($creditcard) == 'false'){
-            echo "Credit card not on file";
+            echo "Error: Credit card not on file. Please use an existing card or add a new card. <br>";
             return;
         }
 
@@ -253,6 +244,87 @@
     if ($connection) {
         getUserInfo();
     }
+
+    if(isset($_POST['balanceSubmit'])){
+        $addBalance =  $_POST["BalanceAmount"];
+        $creditcard = $_POST["CCNumBalance"];
+        getUserInfo();
+        addBalance($addBalance, $creditcard);
+    }
+
+    //insert new CC
+    if (isset($_POST['billingInsert'])) {
+        $cardNum = $_POST['CCNum'];
+        $expiryDate = $_POST['expiryDate'];
+        $CVV = $_POST['CVV'];
+        $name = $_POST['CCName'];
+        $address = $_POST['Address'];
+        $phoneNum = $_POST['CCPhoneNum'];
+
+        $query = "INSERT INTO billing_info
+                  VALUES ('$cardNum', '$expiryDate', '$CVV', '$name', '$address', '$phoneNum', '$userId')";
+
+        $statement = oci_parse($connection, $query);
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+    }
+
+    //update CC
+    if (isset($_POST['billingUpdate'])) {
+        $cardNum = $_POST['CCNum'];
+        $expiryDate = $_POST['expiryDate'];
+        $CVV = $_POST['CVV'];
+        $name = $_POST['CCName'];
+        $address = $_POST['Address'];
+        $phoneNum = $_POST['CCPhoneNum'];
+        
+        $query = "select * from billing_info where '$cardNum' = creditcard_num";
+        $statement = oci_parse($connection, $query);
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        if (!oci_fetch_object($statement)) {
+            echo "Card number does not match any cards on file.";
+        }
+        else {
+            $query = "UPDATE billing_info
+                    SET expiry_date = '$expiryDate', cvv = '$CVV', cardholder_name = '$name', address = '$address', phone_number = '$phoneNum', user_id = '$userId'
+                    WHERE creditcard_num = '$cardNum'";
+
+            $statement = oci_parse($connection, $query);
+            if (!oci_execute($statement)) {
+                $error = oci_error($statement);
+                echo htmlentities($error['message']);
+            }
+        }
+    }
+
+    // delete CC
+    if (isset($_POST['billingDelete'])) {
+        $cardNum = $_POST['CCNum'];
+        $query = "select * from billing_info where '$cardNum' = creditcard_num";
+        $statement = oci_parse($connection, $query);
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        if (!oci_fetch_object($statement)) {
+            echo "Card number does not match any cards on file.";
+        }
+        else {
+            $query = "DELETE FROM billing_info
+                    WHERE creditcard_num = '$cardNum'";
+
+            $statement = oci_parse($connection, $query);
+            if (!oci_execute($statement)) {
+                $error = oci_error($statement);
+                echo htmlentities($error['message']);
+            }
+        }
+    }
 ?>
 
 <h3>User Info </h3>
@@ -307,10 +379,10 @@ tr:nth-child(even) {
 <form method="POST" action="<?php echo "user.php?user=$username" ?>" >
     <div class="container">
         <label for="CCNumBalance">Credit Card Number</label>
-        <input type="text" placeholder="Credit Card Number" name="CCNumBalance" required>
+        <input type="text" placeholder="Must match a card on file" name="CCNumBalance" size="25" required>
         <br>
         <label for="BalanceAmount">Amount to Add</label>
-        <input type="text" placeholder="Amount to Add" name="BalanceAmount" required>
+        <input type="text" placeholder="$" pattern="(([1-9]\d{0,2}(,\d{3})*)|(([1-9]\d*)?\d))(\.\d\d)?" name="BalanceAmount" required>
         <br>
         <input type="submit" value="Submit" name="balanceSubmit">
     </div>
@@ -335,17 +407,17 @@ tr:nth-child(even) {
 <br>
 <br>
 
-<p>Add a new credit card.</p>
-<form method="POST" action="user.php">
+<p><b>Add a new credit card.</b></p>
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
         <label for="CCNum">Credit Card Number</label>
-        <input type="text" placeholder="Credit Card Number" name="CCNum" required>
+        <input type="text" placeholder="Credit Card Number" name="CCNum" maxlength="16" pattern="\d{16}" required>
         <br>
         <label for="CCExpDate">Expiry Date</label>
-        <input type="text" placeholder="Expiry Date" name="CCExpDate" required>
+        <input type="text" placeholder="MMYY" name="expiryDate" maxlength="4" size="6" pattern="(1[0-2]|0[1-9])(1[8-9]|2[0-9])" required>
         <br>
         <label for="CVV">CVV</label>
-        <input type="text" placeholder="CVV" name="CVV" required>
+        <input type="text" placeholder="CVV" name="CVV" maxlength="3" size="4" pattern="\d{3}" required>
         <br>
         <label for="CCName">Cardholder Name</label>
         <input type="text" placeholder="Name" name="CCName" required>
@@ -354,36 +426,42 @@ tr:nth-child(even) {
         <input type="text" placeholder="Address" name="Address" required>
         <br>
         <label for="CCPhoneNum">Phone Number</label>
-        <input type="text" placeholder="Phone Number" name="CCPhoneNum" required>
+        <input type="text" placeholder="10-digit number" name="CCPhoneNum" pattern="\d{10}" required>
         <br>
         <input type="submit" value="Insert" name="billingInsert">
     </div>
 </form>
-<p>Update an existing credit card.</p>
-<form method="POST" action="user.php">
+<p><b>Update an existing credit card.</b></p>
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
-        <label for="CCID">Credit Card ID</label>
-        <input type="text" placeholder="Credit Card ID" name="CCID" required>
+        <label for="CCNum">Credit Card Number</label>
+        <input type="text" placeholder="Credit Card Number" name="CCNum" maxlength="16" pattern="\d{16}" required>
         <br>
-        <label for="CCNumUpdate">Credit Card Number</label>
-        <input type="text" placeholder="Credit Card Number" name="CCNumUpdate" required>
+        <label for="CCExpDate">Expiry Date</label>
+        <input type="text" placeholder="MMYY" name="expiryDate" maxlength="4" size="6" pattern="(1[0-2]|0[1-9])(1[8-9]|2[0-9])" required>
         <br>
-        <label for="CCExpDateUpdate">Expiry Date</label>
-        <input type="text" placeholder="Expiry Date" name="CCExpDateUpdate" required>
+        <label for="CVV">CVV</label>
+        <input type="text" placeholder="CVV" name="CVV" maxlength="3" size="4" pattern="\d{3}" required>
         <br>
-        <label for="CVVUpdate">CVV</label>
-        <input type="text" placeholder="CVV" name="CVVUpdate" required>
+        <label for="CCName">Cardholder Name</label>
+        <input type="text" placeholder="Name" name="CCName" required>
         <br>
-        <label for="CCNameUpdate">Cardholder Name</label>
-        <input type="text" placeholder="Name" name="CCNameUpdate" required>
+        <label for="Address">Address</label>
+        <input type="text" placeholder="Address" name="Address" required>
         <br>
-        <label for="AddressUpdate">Address</label>
-        <input type="text" placeholder="Address" name="AddressUpdate" required>
+        <label for="CCPhoneNum">Phone Number</label>
+        <input type="text" placeholder="10-digit number" name="CCPhoneNum" pattern="\d{10}" required>
         <br>
-        <label for="CCPhoneNumUpdate">Phone Number</label>
-        <input type="text" placeholder="Phone Number" name="CCPhoneNumUpdate" required>
+        <input type="submit" value="Update" name="billingUpdate">
+    </div>
+</form>
+<p><b>Delete an existing credit card.</b></p>
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
+    <div class="container">
+        <label for="CCNum">Credit Card Number</label>
+        <input type="text" placeholder="Credit Card Number" name="CCNum" maxlength="16" pattern="\d{16}" required>
         <br>
-        <input type="submit" value="Update" name="billingUpdateSubmit">
+        <input type="submit" value="Delete" name="billingDelete">
     </div>
 </form>
 <br>
