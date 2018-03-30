@@ -29,12 +29,12 @@ create table users
 
 create table listing
 (
+	id integer PRIMARY KEY,
 	market_item_id integer,
 	user_id integer,
 	listed_date date,
 	listed_price decimal(14,2),
-	quantity integer,
-	PRIMARY KEY (market_item_id, user_id)
+	quantity integer
 );
 
 create table game
