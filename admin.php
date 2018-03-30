@@ -108,10 +108,6 @@
         $seller_id = $row->SELLER_ID;
         $market_item_id = $row->MARKET_ITEM_ID;
 
-        echo $buyer_id;
-        echo $seller_id;
-        echo $market_item_id;
-
         // refund buyer
         $query1 = "UPDATE users SET user_balance = user_balance + '$purchase_price' WHERE user_id = '$buyer_id'";
 
@@ -155,19 +151,11 @@
 
     function deleteGame($gameID) {
       global $connection;
-      $query = "DELETE FROM market_item WHERE item_id='$gameID'";
+      $query = "DELETE FROM game WHERE game_id='$gameID'";
       $statement = oci_parse($connection, $query);
       if (!oci_execute($statement)) {
             $error = oci_error($statement);
             echo htmlentities($error['message']);
-      } else {
-        // $query1 = "DELETE FROM market_item WHERE NOT EXISTS (SELECT a.item_id, a.user_id FROM item_belongsTo b INNER JOIN market_item a ON a.item_id = b.item_id)";
-
-        // $statement1 = oci_parse($connection, $query1);
-        // if (!oci_execute($statement1)) {
-        //     $error = oci_error($statement1);
-        //     echo htmlentities($error['message']);
-        // }
       }
     }
 
