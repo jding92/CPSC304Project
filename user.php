@@ -6,9 +6,11 @@
     $userBalance = isset($userBalance) ? $userBalance : '';
     $userTransactions = isset($userTransactions) ? $userTransactions : '';
 
-
     $connection = oci_connect("ora_z2p0b", "a48540158", "dbhost.ugrad.cs.ubc.ca:1522/ug");
 
+    // takes a table and id column name and returns the max ID + 1
+    function generateID($tableName, $colName) {
+        global $connection;
 
         $query = "SELECT MAX($colName) FROM $tableName";
         $statement = oci_parse($connection, $query);
@@ -197,7 +199,7 @@
     function getPersonalListings() {
         global $userId, $connection;
 
-        $query = "SELECT l.id, l.market_item_id, i.item_name, l.listed_date, l.listed_price, l.quantity 
+        $query = "SELECT l.market_item_id, i.item_name, l.listed_date, l.listed_price, l.quantity 
                   FROM item_belongsTo i, market_item m, listing l 
                   WHERE i.item_id = m.item_id and m.item_id = l.market_item_id and m.user_id = '$userId' and l.user_id = '$userId'";
         $statement = oci_parse($connection, $query);
@@ -282,8 +284,7 @@
 
     function printPersonalListings($result) { //prints results from a select statement
         while (($row = oci_fetch_object($result)) != False) {
-            echo "<tr><td>" . $row->ID . "</td>
-                      <td>" . $row->MARKET_ITEM_ID . "</td>
+            echo "<tr><td>" . $row->MARKET_ITEM_ID . "</td>
                       <td>" . $row->ITEM_NAME . "</td>
                       <td>" . $row->LISTED_DATE . "</td>
                       <td>" . $row->LISTED_PRICE . "</td>
@@ -350,9 +351,7 @@
 
         $date = date('d-M-Y');
 
-        //$listingID = fun();
-
-        $query = "INSERT INTO listing VALUES ($listingID, $itemId, $userId, to_date('$date','DD-Mon-YYYY'), $price, $quantity)";
+        $query = "INSERT INTO listing VALUES ($itemId, $userId, to_date('$date','DD-Mon-YYYY'), $price, $quantity)";
         $statement = oci_parse($connection, $query);
 
         echo $query;
@@ -364,32 +363,8 @@
             echo "successfully added ($itemId, $userId, $date, $price, $quantity)";
         }
 
-
-
         //TODO: delete item from inventory
 
-    }
-
-    if(isset($_POST['sellUpdateSubmit'])){
-        $listingID=  $_POST["ListingIDUpdate"];
-        $price = $_POST["PriceUpdate"];
-        getUserInfo();
-        if($listingID == ''){
-            echo "Updating Listing: No listing ID specified";
-            return;
-        }
-
-        if($quantity == ''){
-            echo "Updating Listing: No quantity specified";
-            return;
-        }
-        updateListing($listingID, $price);
-    }
-    
-    function updateListing($listingID, $price){
-        global $userId, $connection;
-        $query = "UPDATE listing SET listed_price = '$price' where user_id = '$userId' and listing_id = '$listingID'";
-        $statement = oci_parse($connection, $query);
     }
 
 
@@ -501,8 +476,6 @@
             }
         }
     }
-
-
 ?>
 <?php 
     isAdmin() 
@@ -690,7 +663,6 @@ tr:nth-child(even) {
 <h1>Personal Listings</h1>
 <table>
     <tr>
-        <th>Listing ID</th>
         <th>Market Item ID</th>
         <th>Item Name</th>
         <th>Listed Date</th>
@@ -718,11 +690,11 @@ tr:nth-child(even) {
         <input type="submit" value="Sell" name="sellSubmit">
     </div>
 </form>
-<p>Update an existing listing.</p>
+<p>Select an item Name to update an existing listing.</p>
 <form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
-        <label for="ListingIDUpdate">Listing ID</label>
-        <input type="text" placeholder="Listing ID" name="ListingIDUpdate" required>
+        <label for="ItemNameSellUpdate">Item Name</label>
+        <input type="text" placeholder="Item Name" name="ItemNameSellUpdate" required>
         <br>
         <label for="PriceUpdate">Price</label>
         <input type="text" placeholder="Price" name="PriceUpdate" required>
@@ -733,8 +705,12 @@ tr:nth-child(even) {
 <p>Remove an item Listing.</p>
 <form method="POST" action="<?php echo "user.php?user=$username" ?>">
     <div class="container">
-        <label for="ListingIDRemove">Listing ID</label>
-        <input type="text" placeholder="Listing ID" name="ListingIDRemove" required>
+        <label for="ItemNameRemove">Item Name</label>
+        <input type="text" placeholder="Item Name" name="ItemNameRemove" required>
         <br>
+        <label for="QuantityRemove">Quantity</label>
+        <input type="text" placeholder="Quantity" name="QuantityRemove" required>
+        <br>
+        <input type="submit" value="Remove" name="removeSubmit">
     </div>
 </form>
