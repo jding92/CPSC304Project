@@ -182,7 +182,7 @@
     function getPersonalListings() {
         global $userId, $connection;
 
-        $query = "SELECT l.id, i.item_name, l.listed_date, l.listed_price, l.quantity 
+        $query = "SELECT l.id, l.market_item_id, i.item_name, l.listed_date, l.listed_price, l.quantity 
                   FROM item_belongsTo i, market_item m, listing l 
                   WHERE i.item_id = m.item_id and m.item_id = l.market_item_id and m.user_id = '$userId' and l.user_id = '$userId'";
         $statement = oci_parse($connection, $query);
@@ -370,8 +370,6 @@
         }
         updateListing($listingID, $price);
     }
-
-    //UPDATE users SET user_balance = '$newBalance' WHERE user_name = '$username'";
     
     function updateListing($listingID, $price){
         global $userId, $connection;
@@ -488,6 +486,8 @@
             }
         }
     }
+
+
 ?>
 
 <h3>User Info </h3>
