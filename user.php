@@ -157,7 +157,7 @@
     function getGamesInventory() {
         global $userId, $connection;
 
-        $query = "SELECT game_title, game_purchase_date FROM game, market_item WHERE game_id = item_id and user_id = '$userId'";
+        $query = "SELECT game_title, game_purchase_date FROM game WHERE user_id = '$userId'";
         $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {
@@ -171,8 +171,8 @@
         global $userId, $connection;
 
         $query = "SELECT g.game_title, i.item_name, i.item_description, i.item_quantity 
-                  FROM item_belongsto i, market_item m, game g 
-                  WHERE i.item_id = m.item_id and m.user_id = 4 and i.game_id = g.game_id";
+                  FROM item_belongsto i, game g 
+                  WHERE  i.user_id = '$userId' and i.game_id = g.game_id";
         $statement = oci_parse($connection, $query);
 
         if (!oci_execute($statement)) {

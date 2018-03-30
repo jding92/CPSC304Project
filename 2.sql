@@ -10,12 +10,6 @@ create table billing_info
 	PRIMARY KEY(user_id)
 );
 
-create table market_item
-(
-	item_id integer PRIMARY KEY,
-	user_id integer NOT NULL
-);
-
 create table users
 ( 
 	user_id integer PRIMARY KEY,
@@ -40,6 +34,7 @@ create table listing
 create table game
 (
 	game_id integer PRIMARY KEY,
+	user_id integer NOT NULL,
 	game_title varchar(30),
 	game_purchase_date date
 );
@@ -47,6 +42,7 @@ create table game
 create table item_belongsTo
 (
 	item_id integer PRIMARY KEY,
+	user_id integer NOT NULL,
 	item_quantity integer,
 	item_description varchar(250),
 	item_name varchar(30),
@@ -86,29 +82,25 @@ create table monitors
 alter table billing_info
 ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
 
-alter table market_item
-ADD FOREIGN KEY (user_id) REFERENCES users(user_id);
-
 alter table users
 ADD FOREIGN KEY (user_TID) REFERENCES transaction_supervises(transaction_id)
 
 alter table listing
-ADD FOREIGN KEY (market_item_id) REFERENCES market_item(item_id)
+ADD FOREIGN KEY (market_item_id) REFERENCES item_belongsTo(item_id)
 ADD FOREIGN KEY (user_id) REFERENCES users (user_id);
 
 alter table game
-ADD FOREIGN KEY (game_id) REFERENCES market_item (item_id);
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id)
 
 alter table item_belongsTo 
-ADD FOREIGN KEY(item_id) REFERENCES market_item(item_id)
-ADD FOREIGN KEY(game_id) REFERENCES game(game_id) ON DELETE CASCADE;
+ADD FOREIGN KEY (user_id) REFERENCES users(user_id)
+ADD FOREIGN KEY (game_id) REFERENCES game(game_id) ON DELETE CASCADE;
 
 alter table transaction_supervises
 ADD FOREIGN KEY (buyer_id) REFERENCES users (user_id)
 ADD	FOREIGN KEY (seller_id) REFERENCES users (user_id)
-ADD	FOREIGN KEY (market_item_id) REFERENCES market_item (item_id)
+ADD	FOREIGN KEY (market_item_id) REFERENCES item_belongsTo (item_id)
 ADD	FOREIGN KEY (administrator_id) REFERENCES administrator (administrator_id);
-
 
 alter table administrator
 ADD FOREIGN KEY (administrator_id) REFERENCES users (user_id);
@@ -116,6 +108,6 @@ ADD FOREIGN KEY (administrator_id) REFERENCES users (user_id);
 alter table monitors
 ADD FOREIGN KEY (administrator_id) REFERENCES administrator (administrator_id)
 ADD	FOREIGN KEY (user_id) REFERENCES users (user_id)
-ADD	FOREIGN key (market_item_id) REFERENCES market_item (item_id);
+ADD	FOREIGN key (market_item_id) REFERENCES item_belongsTo (item_id);
 
 commit;
