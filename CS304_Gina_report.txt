@@ -1,0 +1,39 @@
+Gina Yao z8b0b 16381139
+
+Assessment of group's final achievement
+Fall short of expectations - a little bit
+Did you exceed your initial predictions - no
+How well did you work together - We communicated well and everybody pulled their weight
+What areas could have been improved - We should've started each milestone much earlier
+Were group roles and responsibilities clearly defined - Yes, we defined each of our tasks during planning
+
+Individual Assessment 
+Contributions - Worked on GUI, came up with examples for queries, implemented several queries
+Specific contributions
+ - GUI for each page
+ - Came up with each example query
+ - Implemented nested aggregation query
+ - Implemented delete on cascade query
+ - Implemented delete without cascade query
+ - Worked on division query but did not work
+Aspects proud of 
+ - Contributed my part
+Aspects for improvement
+ - Should have started on project earlier (as a team)
+What fellow team members will say about achievements
+ - Every team member contributed their share
+
+Assessment of teammates
+- 5, 5, 5, 5 for everybody because everybody worked together and contributed well
+
+Assessment of the project
+Time spent on project
+- 24 hours
+What did you like the best
+- It was interesting to design the database from scratch
+What did you like the least
+- Difficult to debug PHP
+What helped you learn the best
+- Lecture slides, Google, team members
+If you chould change the way that the project was organized, what would you change
+- Nothing
