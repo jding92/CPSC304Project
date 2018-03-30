@@ -37,12 +37,11 @@ create table listing
 	PRIMARY KEY (market_item_id, user_id)
 );
 
-
 create table game
 (
 	game_id integer PRIMARY KEY,
 	game_title varchar(30),
-	game_playtime timestamp
+	game_purchase_date date
 );
 
 create table item_belongsTo

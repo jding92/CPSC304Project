@@ -55,6 +55,34 @@
         return $statement;
     }
 
+    function getGamesInventory() {
+        global $userId, $connection;
+
+        $query = "SELECT game_title, game_purchase_date FROM game, market_item WHERE game_id = item_id and user_id = '$userId'";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
+    function getItemsInventory() {
+        global $userId, $connection;
+
+        $query = "SELECT g.game_title, i.item_name, i.item_description, i.item_quantity 
+                  FROM item_belongsto i, market_item m, game g 
+                  WHERE i.item_id = m.item_id and m.user_id = '$userId' and i.game_id = g.game_id";
+        $statement = oci_parse($connection, $query);
+
+        if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+        }
+        return $statement;
+    }
+
     function printBuyerTransactions($result) { //prints results from a select statement
         echo "<tr><th>Transaction ID</th>
                   <th>Purchase Date</th>
@@ -92,6 +120,24 @@
                   </tr>";        
         }
         echo "</table>";
+    }
+
+    function printGamesInventory($result) { //prints results from a select statement
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->GAME_TITLE . "</td>
+                      <td>" . $row->GAME_PURCHASE_DATE . "</td>
+                  </tr>";        
+        }
+    }
+
+    function printItemsInventory($result) { //prints results from a select statement
+        while (($row = oci_fetch_object($result)) != False) {
+            echo "<tr><td>" . $row->GAME_TITLE . "</td>
+                      <td>" . $row->ITEM_NAME . "</td>
+                      <td style='width:20%'>" . $row->ITEM_DESCRIPTION . "</td>
+                      <td>" . $row->ITEM_QUANTITY . "</td>
+                  </tr>";        
+        }
     }
 
     if ($connection) {
@@ -220,23 +266,40 @@ tr:nth-child(even) {
         <input type="submit" value="Update" name="billingUpdateSubmit">
     </div>
 </form>
-<h1>Game Inventory</h1>
+<br>
+<br>
+
+<h3>Game Inventory</h3>
+
 <table>
     <tr>
-        <th>ID</th>
         <th>Title</th>
+        <th>Purchase Date</th>
     </tr>
+    <?php
+        $result = getGamesInventory();
+        printGamesInventory($result);
+    ?>
 </table>
-<h1>Item Inventory</h1>
-<table>
+<br>
+<br>
+
+<h3>Item Inventory</h3>
+
+<table style="width:100%">
     <tr>
-        <th>ID</th>
-        <th>Name</th>
+        <th>Game Title</th>
+        <th>Item Name</th>
         <th>Description</th>
         <th>Quantity</th>
-        <th>Game ID</th>
-        <th>Game Title</th>
+        <th>Average Listed Price</th>
+        <th>Highest Listed Pirce</th>
+        <th>Lowest Listed Price</th>        
     </tr>
+    <?php
+        $result = getItemsInventory();
+        printItemsInventory($result);
+    ?>
 </table>
 <h1>Personal Listings</h1>
 <table>

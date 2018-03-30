@@ -37,7 +37,7 @@
         }
         $count = oci_fetch_all($statement, $res);
         
-        if($count == 1 || ($username == "test" && $password == "test")) {
+        if($count == 1) {
             $isAdmin;
             $_SESSION['username'] = $username;
         
