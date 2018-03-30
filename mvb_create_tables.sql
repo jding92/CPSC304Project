@@ -99,11 +99,11 @@ ADD FOREIGN KEY (market_item_id) REFERENCES market_item(item_id)
 ADD FOREIGN KEY (user_id) REFERENCES users (user_id);
 
 alter table game
-ADD FOREIGN KEY (game_id) REFERENCES market_item (item_id);
+ADD FOREIGN KEY (game_id) REFERENCES market_item (item_id) ON DELETE CASCADE;
 
 alter table item_belongsTo 
 ADD FOREIGN KEY(item_id) REFERENCES market_item(item_id)
-ADD FOREIGN KEY(game_id) REFERENCES game(game_id);
+ADD FOREIGN KEY(game_id) REFERENCES game(game_id) ON DELETE CASCADE;
 
 alter table transaction_supervises
 ADD FOREIGN KEY (buyer_id) REFERENCES users (user_id)

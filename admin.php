@@ -153,6 +153,37 @@
       </form>";
     }
 
+    function deleteGame($gameID) {
+      global $connection;
+      $query = "DELETE FROM market_item WHERE item_id='$gameID'";
+      $statement = oci_parse($connection, $query);
+      if (!oci_execute($statement)) {
+            $error = oci_error($statement);
+            echo htmlentities($error['message']);
+      } else {
+        // $query1 = "DELETE FROM market_item WHERE NOT EXISTS (SELECT a.item_id, a.user_id FROM item_belongsTo b INNER JOIN market_item a ON a.item_id = b.item_id)";
+
+        // $statement1 = oci_parse($connection, $query1);
+        // if (!oci_execute($statement1)) {
+        //     $error = oci_error($statement1);
+        //     echo htmlentities($error['message']);
+        // }
+      }
+    }
+
+    function deleteGameButton() {
+      global $username;
+      echo "<form method=\"POST\" action=";
+      echo "\"admin.php?user=$username\">";
+      echo "<div class=\"container\">
+              <label for=\"gameIDDelete\">Game ID</label>
+              <input type=\"text\" placeholder=\"Game ID\" name=\"gameIDDelete\" required>
+              <br>
+              <input type=\"submit\" value=\"Delete\" name=\"gameDelete\">
+          </div>
+      </form>";
+    }
+
     function getGames() {
       global $connection;
       $query = "SELECT game_id, game_title FROM game";
@@ -186,8 +217,10 @@
       if (array_key_exists('transactionUndo', $_POST)) {
         $transactionId = $_POST['TransactionID'];
         undoTransaction($transactionId);
+      } else if (array_key_exists('gameDelete', $_POST)) {
+        $gameId = $_POST['gameIDDelete'];
+        deleteGame($gameId);
       }
-
     }
 ?>
 
@@ -210,14 +243,7 @@
 ?>
 <!-- Deletion query -->
 <p>Delete a game from the system.</p>
-<form method="POST" action="admin.php">
-    <div class="container">
-        <label for="gameIDDelete">Game ID</label>
-        <input type="text" placeholder="Game ID" name="gameIDDelete" required>
-        <br>
-        <input type="submit" value="Delete" name="gameDelete">
-    </div>
-</form>
+<?php deleteGameButton(); ?>
 <!-- Division query -->
 Find the user IDs who have bought all the items for Skyrim.
 <table>
