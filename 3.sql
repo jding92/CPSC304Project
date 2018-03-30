@@ -20,7 +20,7 @@ insert into users values
 (5, 'RagingBob', 'tzuyu', 'beiweizhang@gmail.com', 0.25, null);
 
 insert into administrator values
-(1);
+(1);    
 
 insert into administrator values
 (4);

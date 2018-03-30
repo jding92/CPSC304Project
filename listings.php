@@ -54,6 +54,13 @@
         
     }
 ?>
+
+<form method="POST" action="<?php echo "user.php?user=$username" ?>">
+  <div id="homeButton" class="container">
+    <input type="submit" value="Homepage" name="homepage">
+  </div>
+</form>
+
 <head>
 <style>
 table {

@@ -273,9 +273,9 @@
 
     function printItemsInventory($result) { //prints results from a select statement
         while (($row = oci_fetch_object($result)) != False) {
-            echo "<tr><td>" . $row->GAME_TITLE . "</td>
+            echo "<tr><td style='width:30%'>" . $row->GAME_TITLE . "</td>
                       <td>" . $row->ITEM_NAME . "</td>
-                      <td style='width:20%'>" . $row->ITEM_DESCRIPTION . "</td>
+                      <td style='width:50%'>" . $row->ITEM_DESCRIPTION . "</td>
                       <td>" . $row->ITEM_QUANTITY . "</td>
                   </tr>";        
         }
@@ -649,10 +649,7 @@ tr:nth-child(even) {
         <th>Game Title</th>
         <th>Item Name</th>
         <th>Description</th>
-        <th>Quantity</th>
-        <th>Average Listed Price</th>
-        <th>Highest Listed Pirce</th>
-        <th>Lowest Listed Price</th>        
+        <th>Quantity</th>     
     </tr>
     <?php
         getUserInfo();
